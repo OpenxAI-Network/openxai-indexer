@@ -1,14 +1,83 @@
-import { createServer } from "node:http";
+import express from "express";
+import storageManager from "node-persist";
+import { mainnet, sepolia } from "viem/chains";
 
-const hostname = "127.0.0.1";
-const port = 3000;
+import { registerRoutes } from "./api/simple-router.js";
+import { MultichainWatcher } from "./utils/multichain-watcher.js";
+import { PersistentJson } from "./utils/persistent-json.js";
+import { EventsStorage, Storage } from "./types/storage.js";
+import { watchTokensClaimed } from "./event-watchers/claimer/TokensClaimed.js";
+import { watchParticipated } from "./event-watchers/genesis/Participated.js";
+import { watchApproval } from "./event-watchers/token/Approval.js";
+import { watchTransfer } from "./event-watchers/token/Transfer.js";
 
-const server = createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-  res.end("Hello World");
-});
+export let multichainWatcher: MultichainWatcher;
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+async function start() {
+  // Make contract watcher for each chain (using Infura provider)
+  multichainWatcher = new MultichainWatcher([
+    {
+      chain: mainnet,
+      rpc: `mainnet.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
+    },
+    {
+      chain: sepolia,
+      rpc: `sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
+    },
+  ]);
+
+  // Data (memory + json files (synced) currently, could be migrated to a database solution if needed in the future)
+  await storageManager.init({
+    dir: process.env.DATADIR ?? "/var/lib/openxai-indexer",
+  });
+  const storage: Storage = {
+    events: new PersistentJson<EventsStorage>("events", {}),
+  };
+  await storage.events.update((_) => {});
+
+  multichainWatcher.forEach((contractWatcher) => {
+    watchTokensClaimed(contractWatcher, storage);
+
+    watchParticipated(contractWatcher, storage);
+
+    watchApproval(contractWatcher, storage);
+    watchTransfer(contractWatcher, storage);
+  });
+
+  let isStopping = false;
+  process.on("SIGINT", async () => {
+    if (isStopping) {
+      // Sigint can be fired multiple times
+      return;
+    }
+    isStopping = true;
+    console.log("Stopping...");
+
+    multichainWatcher.forEach((contractWatcher) => {
+      contractWatcher.stopAll();
+    });
+    await Promise.all(
+      Object.values(storage).map((storageItem) => {
+        return storageItem.update(() => {}); // Save all memory values to disk
+      })
+    );
+    process.exit();
+  });
+
+  // Webserver
+  const app = express();
+  registerRoutes(app, storage);
+
+  var server = app.listen(process.env.PORT ?? 3001, () => {
+    const addressInfo = server.address() as any;
+    var host = addressInfo.address;
+    var port = addressInfo.port;
+    console.log(`Webserver started on ${host}:${port}`);
+  });
+
+  process.stdin.resume();
+
+  process.stdin.on("data", (input) => {});
+}
+
+start().catch(console.error);

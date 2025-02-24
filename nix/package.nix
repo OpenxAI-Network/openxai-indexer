@@ -1,6 +1,6 @@
 { pkgs, lib }:
 let
-  pname = "xnode-nodejs-template";
+  pname = "openxai-indexer";
 in
 pkgs.buildNpmPackage {
   inherit pname;
@@ -20,7 +20,7 @@ pkgs.buildNpmPackage {
 
     cat > $out/bin/${pname} << EOF
     #!/bin/sh
-    ${pkgs.nodejs}/bin/npm run start --prefix $out/share
+    (export PATH="$PATH:${pkgs.nodejs}/bin" && npm run start --prefix $out/share)
     EOF
     chmod +x $out/bin/${pname}
   '';
@@ -28,6 +28,6 @@ pkgs.buildNpmPackage {
   doDist = false;
 
   meta = {
-    mainProgram = "xnode-nodejs-template";
+    mainProgram = "openxai-indexer";
   };
 }
