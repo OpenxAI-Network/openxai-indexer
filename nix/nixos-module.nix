@@ -24,7 +24,7 @@ in
 
       basePath = lib.mkOption {
         type = lib.types.str;
-        default = "";
+        default = "/";
         example = "/indexer/";
         description = ''
           Path prefix to use for API routes.

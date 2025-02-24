@@ -1,4 +1,5 @@
 import { Express, json } from "express";
+import cors from "cors";
 import { Storage } from "../types/storage.js";
 import { FilterEventsReturn } from "./return-types.js";
 import { replacer, reviver } from "../utils/json.js";
@@ -8,7 +9,8 @@ import { Address } from "viem";
 import { multichainWatcher } from "../index.js";
 
 export function registerRoutes(app: Express, storage: Storage) {
-  const basePath = process.env.BASEPATH ?? "";
+  const basePath = process.env.BASEPATH ?? "/";
+  app.use(cors());
   app.use(json());
 
   app.post(basePath + "sync", async function (req, res) {

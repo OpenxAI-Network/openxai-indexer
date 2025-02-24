@@ -74,10 +74,6 @@ async function start() {
     var port = addressInfo.port;
     console.log(`Webserver started on ${host}:${port}`);
   });
-
-  process.stdin.resume();
-
-  process.stdin.on("data", (input) => {});
 }
 
 start().catch(console.error);
