@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "outDir": "build",
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules"]
+}

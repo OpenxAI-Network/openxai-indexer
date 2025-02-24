@@ -1,0 +1,16 @@
+{
+  "name": "xnode-nodejs-app",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf build && npx tsc",
+    "start": "node build/index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.14.5",
+    "typescript": "^5.4.5"
+  }
+}
