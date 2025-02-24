@@ -7,6 +7,9 @@ import { ObjectFilter, passesObjectFilter } from "./filter.js";
 import { historySync } from "../utils/history-sync.js";
 import { Address } from "viem";
 import { multichainWatcher } from "../index.js";
+import { OpenxAIClaimerContract } from "../contracts/OpenxAIClaimer.js";
+import { OpenxAIGenesisContract } from "../contracts/OpenxAIGenesis.js";
+import { OpenxAIContract } from "../contracts/OpenxAI.js";
 
 export function registerRoutes(app: Express, storage: Storage) {
   const basePath = process.env.BASEPATH ?? "/";
@@ -20,20 +23,16 @@ export function registerRoutes(app: Express, storage: Storage) {
         chainId,
         fromBlock,
         toBlock,
-        addresses,
       }: {
         chainId: number;
         fromBlock: bigint;
         toBlock: bigint;
-        addresses?: Address[];
       } = JSON.parse(JSON.stringify(req.body), reviver);
-      historySync(
-        multichainWatcher,
-        chainId,
-        fromBlock,
-        toBlock,
-        addresses
-      ).catch((err) => {
+      historySync(multichainWatcher, chainId, fromBlock, toBlock, [
+        OpenxAIClaimerContract.address,
+        OpenxAIGenesisContract.address,
+        OpenxAIContract.address,
+      ]).catch((err) => {
         console.error(`Error while executing history sync: ${err}`);
         res.statusCode = 500;
       });
