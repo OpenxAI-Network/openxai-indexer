@@ -8,7 +8,7 @@
     "backersRewards": "550030",
     "flashBonus": "120000",
     "rewardAPY": "76.50",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -20,7 +20,7 @@
     "backersRewards": "1087678",
     "flashBonus": "240000",
     "rewardAPY": "70.30",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -32,7 +32,7 @@
     "backersRewards": "716862",
     "flashBonus": "160000",
     "rewardAPY": "64.52",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -44,7 +44,7 @@
     "backersRewards": "177151",
     "flashBonus": "40000",
     "rewardAPY": "59.11",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -56,7 +56,7 @@
     "backersRewards": "175087",
     "flashBonus": "40000",
     "rewardAPY": "54.05",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -68,7 +68,7 @@
     "backersRewards": "276837",
     "flashBonus": "64000",
     "rewardAPY": "49.31",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -80,7 +80,7 @@
     "backersRewards": "854798",
     "flashBonus": "200000",
     "rewardAPY": "44.84",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -92,7 +92,7 @@
     "backersRewards": "168895",
     "flashBonus": "40000",
     "rewardAPY": "40.64",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -104,7 +104,7 @@
     "backersRewards": "333663",
     "flashBonus": "80000",
     "rewardAPY": "36.67",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
@@ -116,7 +116,7 @@
     "backersRewards": "2500000",
     "flashBonus": "600000",
     "rewardAPY": "35.20",
-    "status": "Pending",
+    "status": "Claimable",
     "escrow": "0xF1f3393e65D443cC261bD0263Fe90386A5bA7647"
   },
   {
