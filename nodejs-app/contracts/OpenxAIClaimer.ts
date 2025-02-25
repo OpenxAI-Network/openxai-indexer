@@ -154,6 +154,12 @@ export const OpenxAIClaimerContract = {
       name: "TokensClaimed",
       inputs: [
         {
+          name: "proofId",
+          type: "uint256",
+          indexed: true,
+          internalType: "uint256",
+        },
+        {
           name: "account",
           type: "address",
           indexed: true,
