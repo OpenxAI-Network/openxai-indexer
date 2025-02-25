@@ -10,6 +10,8 @@ import { watchTokensClaimed } from "./event-watchers/claimer/TokensClaimed.js";
 import { watchParticipated } from "./event-watchers/genesis/Participated.js";
 import { watchApproval } from "./event-watchers/token/Approval.js";
 import { watchTransfer } from "./event-watchers/token/Transfer.js";
+import { RewardsStorage } from "./types/rewards.js";
+import { datadir } from "./utils/env.js";
 
 export let multichainWatcher: MultichainWatcher;
 
@@ -28,10 +30,20 @@ async function start() {
 
   // Data (memory + json files (synced) currently, could be migrated to a database solution if needed in the future)
   await storageManager.init({
-    dir: process.env.DATADIR ?? "/var/lib/openxai-indexer",
+    dir: datadir(),
   });
   const storage: Storage = {
     events: new PersistentJson<EventsStorage>("events", {}),
+    rewards: new PersistentJson<RewardsStorage>("rewards", {
+      [mainnet.id]: {
+        nextProofId: BigInt(1),
+        proofs: {},
+      },
+      [sepolia.id]: {
+        nextProofId: BigInt(1),
+        proofs: {},
+      },
+    }),
   };
   await storage.events.update((_) => {});
 
