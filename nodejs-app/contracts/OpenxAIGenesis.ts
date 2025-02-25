@@ -1,5 +1,5 @@
 export const OpenxAIGenesisContract = {
-  address: "0x32022e2032eCB7055589Dc249e3F4Cc5E2B53641",
+  address: "0xC009DC427047d8C1C6E5a9c754b656aB6B000D84",
   abi: [
     {
       type: "constructor",

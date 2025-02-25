@@ -16,21 +16,23 @@ import { join } from "path";
 import { reviver } from "./json.js";
 import { EventIdentifier } from "../types/event-identifier.js";
 import { Proof } from "../types/rewards.js";
+import projectsRaw from "./projects.json" with {type:"json"};
 
-const MILESTONES = [
-  {
-    rate: 123.456789,
-    completed: true,
-  },
-  {
-    rate: 100,
-    completed: false,
-  },
-  {
-    rate: 12.25,
-    completed: false,
-  },
-];
+const projects = projectsRaw as {
+  fundingGoal: string;
+  backersRewards: string;
+  flashBonus: string;
+  status: String;
+}[];
+
+const MILESTONES = projects.map((p) => {
+  return {
+    rate:
+      (parseInt(p.backersRewards) + parseInt(p.flashBonus)) /
+      parseInt(p.fundingGoal),
+    completed: p.status === "Claimable",
+  };
+});
 
 async function calculateReward({
   chainId,
