@@ -30,7 +30,7 @@ const MILESTONES = projects.map((p) => {
     rate:
       (parseInt(p.backersRewards) + parseInt(p.flashBonus)) /
       parseInt(p.fundingGoal),
-    completed: p.status === "Claimable",
+    completed: p.status === "Completed",
   };
 });
 
