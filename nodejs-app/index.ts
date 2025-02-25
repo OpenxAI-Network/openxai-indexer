@@ -12,6 +12,7 @@ import { watchApproval } from "./event-watchers/token/Approval.js";
 import { watchTransfer } from "./event-watchers/token/Transfer.js";
 import { RewardsStorage } from "./types/rewards.js";
 import { datadir } from "./utils/env.js";
+import { join } from "path";
 
 export let multichainWatcher: MultichainWatcher;
 
@@ -30,7 +31,7 @@ async function start() {
 
   // Data (memory + json files (synced) currently, could be migrated to a database solution if needed in the future)
   await storageManager.init({
-    dir: datadir(),
+    dir: join(datadir(), "storage"),
   });
   const storage: Storage = {
     events: new PersistentJson<EventsStorage>("events", {}),
