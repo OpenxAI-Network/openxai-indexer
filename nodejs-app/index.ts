@@ -46,7 +46,6 @@ async function start() {
       },
     }),
   };
-  await storage.events.update((_) => {});
 
   multichainWatcher.forEach((contractWatcher) => {
     watchTokensClaimed(contractWatcher, storage);
