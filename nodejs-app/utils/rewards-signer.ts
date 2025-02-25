@@ -15,6 +15,7 @@ import { datadir } from "./env.js";
 import { join } from "path";
 import { reviver } from "./json.js";
 import { EventIdentifier } from "../types/event-identifier.js";
+import { Proof } from "../types/rewards.js";
 
 const MILESTONES = [
   {
@@ -124,7 +125,7 @@ export async function sign({
   claimer: Address;
   basedOn: string[];
   storage: Storage;
-}) {
+}): Promise<Proof> {
   const domain = {
     name: "OpenxAIClaiming",
     version: "1",
@@ -164,17 +165,14 @@ export async function sign({
     },
   });
 
+  const proof: Proof = { proofId, signature, claimer, basedOn };
   await storage.rewards.update(async (rewards) => {
     const chainRewards = rewards[chainId];
     if (chainRewards.proofs[proofId.toString()]) {
       throw Error(`Proof id already used.`);
     }
-    chainRewards.proofs[proofId.toString()] = {
-      signature,
-      claimer,
-      basedOn,
-    };
+    chainRewards.proofs[proofId.toString()] = proof;
   });
 
-  return signature;
+  return proof;
 }

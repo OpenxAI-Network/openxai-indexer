@@ -1,6 +1,7 @@
 import { Address, SignTypedDataReturnType } from "viem";
 
 export interface Proof {
+  proofId: bigint;
   signature: SignTypedDataReturnType;
   claimer: Address;
   basedOn: string[];

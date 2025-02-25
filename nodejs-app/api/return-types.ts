@@ -3,9 +3,8 @@ import { Proof } from "../types/rewards.js";
 
 export type FilterEventsReturn = Event[];
 
-export type GetProofReturn = `0x${string}`;
+export type GetProofReturn = Proof;
 
 export type FilterProofsReturn = ({
   chainId: number;
-  proofId: bigint;
 } & Proof)[];

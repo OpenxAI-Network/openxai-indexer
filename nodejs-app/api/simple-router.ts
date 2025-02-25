@@ -78,9 +78,9 @@ export function registerRoutes(app: Express, storage: Storage) {
       const params: { chainId: number; claimer: Address; basedOn: string[] } =
         JSON.parse(JSON.stringify(req.body), reviver);
 
-      const signature = await sign({ ...params, storage: storage });
+      const proof = await sign({ ...params, storage: storage });
 
-      res.end(JSON.stringify(signature as GetProofReturn, replacer));
+      res.end(JSON.stringify(proof as GetProofReturn, replacer));
     } catch (error: any) {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: error?.message ?? "Unknown error" }));
@@ -96,19 +96,13 @@ export function registerRoutes(app: Express, storage: Storage) {
 
       const rewards = await storage.rewards.get();
       const filterProof = Object.keys(rewards)
+        .map(Number)
         .map((chainId) =>
-          Object.keys(rewards[Number(chainId)].proofs).map((proofId) => {
-            return { chainId: Number(chainId), proofId };
+          Object.values(rewards[chainId].proofs).map((proof) => {
+            return { chainId, ...proof };
           })
         )
         .flat(1)
-        .map(({ chainId, proofId }) => {
-          return {
-            chainId,
-            proofId: BigInt(proofId),
-            ...rewards[chainId].proofs[proofId],
-          };
-        })
         .filter((proof) => {
           return passesObjectFilter(proof, filter);
         });
