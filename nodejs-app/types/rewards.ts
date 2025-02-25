@@ -4,6 +4,7 @@ export interface Proof {
   proofId: bigint;
   signature: SignTypedDataReturnType;
   claimer: Address;
+  amount: bigint;
   basedOn: string[];
 }
 

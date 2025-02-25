@@ -165,7 +165,7 @@ export async function sign({
     },
   });
 
-  const proof: Proof = { proofId, signature, claimer, basedOn };
+  const proof: Proof = { proofId, signature, claimer, amount, basedOn };
   await storage.rewards.update(async (rewards) => {
     const chainRewards = rewards[chainId];
     if (chainRewards.proofs[proofId.toString()]) {
