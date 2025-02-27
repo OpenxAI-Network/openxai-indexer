@@ -67,6 +67,7 @@ in
         StateDirectory = "openxai-indexer";
         DynamicUser = true;
         CacheDirectory = "nodejs-app";
+        Restart = "on-failure";
       };
     };
   };

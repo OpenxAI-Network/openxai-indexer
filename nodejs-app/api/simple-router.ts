@@ -78,7 +78,9 @@ export function registerRoutes(app: Express, storage: Storage) {
       const params: { chainId: number; claimer: Address; basedOn: string[] } =
         JSON.parse(JSON.stringify(req.body), reviver);
 
-      const proof = await sign({ ...params, storage: storage });
+      const proof = await sign({ ...params, storage: storage }).catch((e) => {
+        throw e;
+      });
 
       res.end(JSON.stringify(proof as GetProofReturn, replacer));
     } catch (error: any) {
