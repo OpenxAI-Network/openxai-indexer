@@ -55,19 +55,19 @@ async function calculateReward({
         reviver
       ) as EventIdentifier;
       if (eventId.chainId !== chainId) {
-        throw Error(`Chain id of event ${eventId} does not match ${chainId}`);
+        throw Error(`Chain id of event ${i} does not match ${chainId}`);
       }
 
       const event =
         events[eventId.chainId][eventId.transactionHash][eventId.logIndex];
       if (!event) {
-        throw Error(`Event ${eventId} does not exist`);
+        throw Error(`Event ${i} does not exist`);
       }
 
       if (event.type === "Participated") {
         if (event.account.toLowerCase() !== claimer.toLowerCase()) {
           throw Error(
-            `Participation event ${event} does not match claimer ${claimer}`
+            `Participation event ${i} does not match claimer ${claimer}`
           );
         }
 
@@ -166,14 +166,14 @@ export async function sign({
           throw Error(`Event ${eventId} does not exist`);
         }
 
-        const normalizedBasedOn = JSON.stringify(
+        const normalizedBasedOn = `event:${JSON.stringify(
           {
             chainId: event.chainId,
             transactionHash: event.transactionHash,
             logIndex: event.logIndex,
           },
           replacer
-        );
+        )}`;
         if (chainRewards.alreadyClaimed[normalizedBasedOn]) {
           alreadyClaimed = normalizedBasedOn;
         }
