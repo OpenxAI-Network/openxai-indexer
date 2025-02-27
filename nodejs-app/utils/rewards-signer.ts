@@ -76,7 +76,7 @@ async function calculateReward({
         if (!milestone) {
           throw Error(`Milestone ${event.tier.toString()} not found`);
         }
-        if (!milestone.completed) {
+        if (!milestone.completed && chainId !== sepolia.id) { // Testnet allows claiming of all milestones
           throw Error(`Milestone ${event.tier.toString()} not completed yet`);
         }
         reward += parseUnits(
