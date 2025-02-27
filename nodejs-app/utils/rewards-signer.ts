@@ -146,6 +146,7 @@ export async function sign({
   const amount = await calculateReward({ chainId, claimer, basedOn, events });
   const signer = await getSigner({ chainId });
 
+  let alreadyClaimed: string | undefined = undefined;
   await storage.rewards.update(async (rewards) => {
     const chainRewards = rewards[chainId];
     for (let i = 0; i < basedOn.length; i++) {
@@ -174,7 +175,7 @@ export async function sign({
           replacer
         );
         if (chainRewards.alreadyClaimed[normalizedBasedOn]) {
-          throw Error(`Event ${normalizedBasedOn} already claimed`);
+          alreadyClaimed = normalizedBasedOn;
         }
 
         // If a later error occurs, the based on events will not revert back to false
@@ -182,6 +183,9 @@ export async function sign({
       }
     }
   });
+  if (alreadyClaimed) {
+    throw Error(`Event ${alreadyClaimed} already claimed`);
+  }
 
   let proofId = BigInt(0);
   await storage.rewards.update((rewards) => {
