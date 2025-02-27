@@ -9,11 +9,11 @@ import {
 import { OpenxAIClaimerContract } from "../contracts/OpenxAIClaimer.js";
 import { mainnet, sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
-import { Storage } from "../types/storage.js";
+import { EventsStorage, Storage } from "../types/storage.js";
 import { readFile } from "fs/promises";
 import { datadir } from "./env.js";
 import { join } from "path";
-import { reviver } from "./json.js";
+import { replacer, reviver } from "./json.js";
 import { EventIdentifier } from "../types/event-identifier.js";
 import { Proof } from "../types/rewards.js";
 import projectsRaw from "./projects.json" with {type:"json"};
@@ -38,16 +38,15 @@ async function calculateReward({
   chainId,
   claimer,
   basedOn,
-  storage,
+  events,
 }: {
   chainId: number;
   claimer: Address;
   basedOn: string[];
-  storage: Storage;
+  events: EventsStorage;
 }): Promise<bigint> {
   let reward = BigInt(0);
 
-  const events = await storage.events.get();
   for (let i = 0; i < basedOn.length; i++) {
     const base = basedOn[i];
     if (base.startsWith("event:")) {
@@ -76,7 +75,8 @@ async function calculateReward({
         if (!milestone) {
           throw Error(`Milestone ${event.tier.toString()} not found`);
         }
-        if (!milestone.completed && chainId !== sepolia.id) { // Testnet allows claiming of all milestones
+        if (!milestone.completed && chainId !== sepolia.id) {
+          // Testnet allows claiming of all milestones
           throw Error(`Milestone ${event.tier.toString()} not completed yet`);
         }
         reward += parseUnits(
@@ -142,8 +142,46 @@ export async function sign({
     ],
   } as const;
 
-  const amount = await calculateReward({ chainId, claimer, basedOn, storage });
+  const events = await storage.events.get();
+  const amount = await calculateReward({ chainId, claimer, basedOn, events });
   const signer = await getSigner({ chainId });
+
+  await storage.rewards.update(async (rewards) => {
+    const chainRewards = rewards[chainId];
+    for (let i = 0; i < basedOn.length; i++) {
+      const base = basedOn[i];
+      if (base.startsWith("event:")) {
+        const eventId = JSON.parse(
+          base.replace("event:", ""),
+          reviver
+        ) as EventIdentifier;
+        if (eventId.chainId !== chainId) {
+          throw Error(`Chain id of event ${eventId} does not match ${chainId}`);
+        }
+
+        const event =
+          events[eventId.chainId][eventId.transactionHash][eventId.logIndex];
+        if (!event) {
+          throw Error(`Event ${eventId} does not exist`);
+        }
+
+        const normalizedBasedOn = JSON.stringify(
+          {
+            chainId: event.chainId,
+            transactionHash: event.transactionHash,
+            logIndex: event.logIndex,
+          },
+          replacer
+        );
+        if (chainRewards.alreadyClaimed[normalizedBasedOn]) {
+          throw Error(`Event ${normalizedBasedOn} already claimed`);
+        }
+
+        // If a later error occurs, the based on events will not revert back to false
+        chainRewards.alreadyClaimed[normalizedBasedOn] = true;
+      }
+    }
+  });
 
   let proofId = BigInt(0);
   await storage.rewards.update((rewards) => {

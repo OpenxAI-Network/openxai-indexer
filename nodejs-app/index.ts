@@ -39,10 +39,12 @@ async function start() {
       [mainnet.id]: {
         nextProofId: BigInt(1),
         proofs: {},
+        alreadyClaimed: {},
       },
       [sepolia.id]: {
-        nextProofId: BigInt(1),
+        nextProofId: BigInt(11),
         proofs: {},
+        alreadyClaimed: {},
       },
     }),
   };
