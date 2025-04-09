@@ -52,6 +52,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    users.groups.openxai-indexer = { };
+    users.users.openxai-indexer = {
+      isSystemUser = true;
+      group = "openxai-indexer";
+    };
+
     systemd.services.openxai-indexer = {
       wantedBy = [ "multi-user.target" ];
       description = "Node.js App.";
@@ -64,9 +70,9 @@ in
       };
       serviceConfig = {
         ExecStart = "${lib.getExe openxai-indexer}";
+        User = "openxai-indexer";
+        Group = "openxai-indexer";
         StateDirectory = "openxai-indexer";
-        DynamicUser = true;
-        CacheDirectory = "nodejs-app";
         Restart = "on-failure";
       };
     };

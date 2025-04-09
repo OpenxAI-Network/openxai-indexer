@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     openxai-indexer = {
-      url = "github:OpenxAI-Network/openxai-indexer";
+      url = "path:.."; # "github:OpenxAI-Network/openxai-indexer";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -13,16 +13,19 @@ pkgs.buildNpmPackage {
   npmConfigHook = pkgs.importNpmLock.npmConfigHook;
 
   postBuild = ''
-    mkdir -p $out/{share,bin}
-    cp -r build $out/share/build
-    cp -r node_modules $out/share/node_modules
-    cp -r package.json $out/share/package.json
+    # Add a shebang to the server js file, then patch the shebang to use a
+    # nixpkgs nodes binary
+    sed -i '1s|^|#!/usr/bin/env node\n|' build/index.js
+    patchShebangs build/index.js
+  '';
 
-    cat > $out/bin/${pname} << EOF
-    #!/bin/sh
-    (export PATH="$PATH:${pkgs.nodejs}/bin" && npm run start --prefix $out/share)
-    EOF
-    chmod +x $out/bin/${pname}
+  installPhase = ''
+    mkdir -p $out
+    cp package.json $out/package.json
+    cp -r node_modules $out/node_modules
+    cp -r build $out/build
+    chmod +x $out/build/index.js
+    makeWrapper $out/build/index.js $out/bin/openxai-indexer 
   '';
 
   doDist = false;
