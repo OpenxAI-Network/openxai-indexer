@@ -4,17 +4,19 @@ import { Storage } from "../types/storage.js";
 import {
   FilterEventsReturn,
   FilterProofsReturn,
+  FilterSignsReturn,
   GetProofReturn,
 } from "./return-types.js";
 import { replacer, reviver } from "../utils/json.js";
 import { ObjectFilter, passesObjectFilter } from "./filter.js";
 import { historySync } from "../utils/history-sync.js";
-import { Address } from "viem";
+import { Address, verifyMessage } from "viem";
 import { multichainWatcher } from "../index.js";
 import { OpenxAIClaimerContract } from "../contracts/OpenxAIClaimer.js";
 import { OpenxAIGenesisContract } from "../contracts/OpenxAIGenesis.js";
 import { OpenxAIContract } from "../contracts/OpenxAI.js";
 import { sign } from "../utils/rewards-signer.js";
+import { Sign } from "../types/sign.js";
 
 export function registerRoutes(app: Express, storage: Storage) {
   const basePath = process.env.BASEPATH ?? "/";
@@ -87,7 +89,7 @@ export function registerRoutes(app: Express, storage: Storage) {
     }
   });
 
-  app.post(basePath + "filterProof", async function (req, res) {
+  app.post(basePath + "filterProofs", async function (req, res) {
     try {
       const filter: ObjectFilter = JSON.parse(
         JSON.stringify(req.body),
@@ -95,7 +97,7 @@ export function registerRoutes(app: Express, storage: Storage) {
       );
 
       const rewards = await storage.rewards.get();
-      const filterProof = Object.keys(rewards)
+      const filterProofs = Object.keys(rewards)
         .map(Number)
         .map((chainId) =>
           Object.values(rewards[chainId].proofs).map((proof) => {
@@ -107,7 +109,55 @@ export function registerRoutes(app: Express, storage: Storage) {
           return passesObjectFilter(proof, filter);
         });
 
-      res.end(JSON.stringify(filterProof as FilterProofsReturn, replacer));
+      res.end(JSON.stringify(filterProofs as FilterProofsReturn, replacer));
+    } catch (error: any) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: error?.message ?? "Unknown error" }));
+    }
+  });
+
+  app.post(basePath + "uploadSign", async function (req, res) {
+    try {
+      const params: Omit<Sign, "date"> = JSON.parse(
+        JSON.stringify(req.body),
+        reviver
+      );
+
+      if (
+        !verifyMessage({
+          address: params.address,
+          message: params.message,
+          signature: params.signature,
+        })
+      ) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ error: "Signature verification failed." }));
+      }
+
+      await storage.signs.update((signs) =>
+        signs.push({ ...params, date: Math.round(Date.now() / 1000) })
+      );
+
+      res.end();
+    } catch (error: any) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: error?.message ?? "Unknown error" }));
+    }
+  });
+
+  app.post(basePath + "filterSigns", async function (req, res) {
+    try {
+      const filter: ObjectFilter = JSON.parse(
+        JSON.stringify(req.body),
+        reviver
+      );
+
+      const signs = await storage.signs.get();
+      const filterSigns = Object.values(signs).filter((sign) => {
+        return passesObjectFilter(sign, filter);
+      });
+
+      res.end(JSON.stringify(filterSigns as FilterSignsReturn, replacer));
     } catch (error: any) {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: error?.message ?? "Unknown error" }));

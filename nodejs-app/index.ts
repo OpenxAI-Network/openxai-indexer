@@ -13,6 +13,7 @@ import { watchTransfer } from "./event-watchers/token/Transfer.js";
 import { RewardsStorage } from "./types/rewards.js";
 import { datadir } from "./utils/env.js";
 import { join } from "path";
+import { SignStorage } from "./types/sign.js";
 
 export let multichainWatcher: MultichainWatcher;
 
@@ -47,6 +48,7 @@ async function start() {
         alreadyClaimed: {},
       },
     }),
+    signs: new PersistentJson<SignStorage>("signs", []),
   };
 
   multichainWatcher.forEach((contractWatcher) => {

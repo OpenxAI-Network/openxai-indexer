@@ -2,6 +2,7 @@ import { Hex } from "viem";
 import { PersistentJson } from "../utils/persistent-json.js";
 import { Event } from "./event.js";
 import { RewardsStorage } from "./rewards.js";
+import { SignStorage } from "./sign.js";
 
 export type EventsStorage = {
   [chainId: number]: {
@@ -14,4 +15,5 @@ export type EventsStorage = {
 export interface Storage {
   events: PersistentJson<EventsStorage>;
   rewards: PersistentJson<RewardsStorage>;
+  signs: PersistentJson<SignStorage>;
 }
