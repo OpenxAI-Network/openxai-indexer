@@ -1,6 +1,6 @@
-{ rustPlatform }:
+{ pkgs, rustPlatform }:
 rustPlatform.buildRustPackage {
-  pname = "xnode-rust-template";
+  pname = "openxai-indexer";
   version = "1.0.0";
   src = ../rust-app;
 
@@ -10,7 +10,14 @@ rustPlatform.buildRustPackage {
 
   doDist = false;
 
+  buildInputs = with pkgs; [
+    openssl
+  ];
+  nativeBuildInputs = with pkgs; [
+    pkg-config
+  ];
+
   meta = {
-    mainProgram = "xnode-rust-template";
+    mainProgram = "openxai-indexer";
   };
 }

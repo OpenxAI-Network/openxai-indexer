@@ -1,5 +1,5 @@
 {
-  description = "Rust app running on Xnode!";
+  description = "Indexes OpenxAI smart contract events for efficient retrieval.";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
