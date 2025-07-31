@@ -27,17 +27,19 @@ pub async fn create_connection() -> DatabaseConnection {
         .await
         .unwrap_or_else(|e| panic!("Could not establish database connection: {e}"));
 
-    sqlx::raw_sql("CREATE TABLE IF NOT EXISTS participated(tier INTEGER NOT NULL, account TEXT NOT NULL, amount INTEGER NOT NULL, transaction_hash TEXT NOT NULL, transaction_index INTEGER NOT NULL, PRIMARY KEY (transaction_hash, transaction_index))")
+    sqlx::raw_sql("CREATE TABLE IF NOT EXISTS participated(tier INT8 NOT NULL, account TEXT NOT NULL, amount INT8 NOT NULL, transaction_hash TEXT NOT NULL, transaction_index INT8 NOT NULL, PRIMARY KEY (transaction_hash, transaction_index))")
         .execute(&pool)
         .await
         .unwrap_or_else(|e| panic!("Could not create participated table: {e}"));
 
-    sqlx::raw_sql("CREATE TABLE IF NOT EXISTS claim(claimer TEXT NOT NULL PRIMARY KEY, total INTEGER NOT NULL)")
-        .execute(&pool)
-        .await
-        .unwrap_or_else(|e| panic!("Could not create claim table: {e}"));
+    sqlx::raw_sql(
+        "CREATE TABLE IF NOT EXISTS claim(claimer TEXT NOT NULL PRIMARY KEY, total INT8 NOT NULL)",
+    )
+    .execute(&pool)
+    .await
+    .unwrap_or_else(|e| panic!("Could not create claim table: {e}"));
 
-    sqlx::raw_sql("CREATE TABLE IF NOT EXISTS tokens_claimed(account TEXT NOT NULL, total INTEGER NOT NULL, released INTEGER NOT NULL, transaction_hash TEXT NOT NULL, transaction_index INTEGER NOT NULL, PRIMARY KEY (transaction_hash, transaction_index))")
+    sqlx::raw_sql("CREATE TABLE IF NOT EXISTS tokens_claimed(account TEXT NOT NULL, total INT8 NOT NULL, released INT8 NOT NULL, transaction_hash TEXT NOT NULL, transaction_index INT8 NOT NULL, PRIMARY KEY (transaction_hash, transaction_index))")
         .execute(&pool)
         .await
         .unwrap_or_else(|e| panic!("Could not create tokens_claimed table: {e}"));
