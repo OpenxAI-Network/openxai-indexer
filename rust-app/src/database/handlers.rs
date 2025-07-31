@@ -47,16 +47,18 @@ pub async fn create_connection() -> DatabaseConnection {
 
 impl DatabaseParticipated {
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
-        query_as("SELECT tier, account, amount, transaction_hash, transaction_index FROM genesis")
-            .fetch_all(&database.connection)
-            .await
+        query_as(
+            "SELECT tier, account, amount, transaction_hash, transaction_index FROM participated",
+        )
+        .fetch_all(&database.connection)
+        .await
     }
 
     pub async fn get_all_by_account(
         database: &Database,
         account: &str,
     ) -> Result<Vec<Self>, Error> {
-        query_as("SELECT tier, account, amount, transaction_hash, transaction_index FROM genesis WHERE account = $1")
+        query_as("SELECT tier, account, amount, transaction_hash, transaction_index FROM participated WHERE account = $1")
             .bind(account)
             .fetch_all(&database.connection)
             .await
