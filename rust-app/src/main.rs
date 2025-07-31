@@ -25,7 +25,7 @@ async fn main() {
             HttpServer::new(move || {
                 App::new()
                     .wrap(Cors::permissive())
-                    .app_data(database.clone())
+                    .app_data(web::Data::new(database.clone()))
                     .service(web::scope("/api").configure(api::configure))
             })
             .bind(format!(
