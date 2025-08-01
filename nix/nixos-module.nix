@@ -98,8 +98,8 @@ in
 
         genesis = lib.mkOption {
           type = lib.types.str;
-          default = "0xC950A7c6D892ba39df564f263c830eB2A6E600e1";
-          example = "0xC950A7c6D892ba39df564f263c830eB2A6E600e1";
+          default = "0x84599c907B42e9bc21F9FE26D9e5A5D3747109D3";
+          example = "0x84599c907B42e9bc21F9FE26D9e5A5D3747109D3";
           description = ''
             OpenxAIGenesis contract address. 
           '';

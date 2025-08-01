@@ -3,8 +3,8 @@ use actix_web::{App, HttpServer, web};
 use tokio::{spawn, try_join};
 
 use crate::{
-    blockchain::handlers::start_event_listeners,
-    database::handlers::Database,
+    blockchain::start_event_listeners,
+    database::Database,
     utils::env::{hostname, port},
 };
 

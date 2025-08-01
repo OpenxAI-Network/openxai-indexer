@@ -5,7 +5,7 @@ use alloy::{
 };
 
 use crate::{
-    blockchain::models::Claim,
+    blockchain::claimer::Claim,
     utils::env::{chainid, claimer, claimerkey},
 };
 

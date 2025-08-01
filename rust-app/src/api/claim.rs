@@ -2,40 +2,25 @@ use actix_web::{HttpResponse, Responder, get, post, web};
 use alloy::primitives::{Address, U256};
 
 use crate::{
-    blockchain::models::Claim,
-    database::{
-        handlers::Database,
-        models::{DatabaseClaimer, DatabaseParticipated, DatabaseTokensClaimed},
-    },
+    blockchain::claimer::Claim,
+    database::{Database, claim::DatabaseClaim},
     utils::wallet::get_claimer_signature,
 };
 
-#[get("/{account}/participated")]
-async fn participated(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
+#[get("/{account}/claim")]
+async fn get_claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
-    match DatabaseParticipated::get_all_by_account(&database, &account).await {
-        Ok(events) => HttpResponse::Ok().json(events),
+    match DatabaseClaim::get_by_account(&database, &account).await {
+        Ok(claim) => HttpResponse::Ok().json(claim.map(|claim| claim.total).unwrap_or(0)),
         Err(e) => {
-            log::error!("Fetching participated events for {account}: {e}");
-            HttpResponse::InternalServerError().finish()
-        }
-    }
-}
-
-#[get("/{account}/tokens_claimed")]
-async fn tokens_claimed(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
-    let account = path.into_inner();
-    match DatabaseTokensClaimed::get_all_by_account(&database, &account).await {
-        Ok(events) => HttpResponse::Ok().json(events),
-        Err(e) => {
-            log::error!("Fetching tokens_claimed events for {account}: {e}");
+            log::error!("Fetching claim for {account}: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }
 }
 
 #[post("/{account}/claim")]
-async fn claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
+async fn post_claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
     let claimer = match Address::parse_checksummed(&account, None) {
         Ok(claimer) => claimer,
@@ -44,7 +29,7 @@ async fn claim(database: web::Data<Database>, path: web::Path<String>) -> impl R
         }
     };
 
-    let total = match DatabaseClaimer::get_by_account(&database, &account).await {
+    let total = match DatabaseClaim::get_by_account(&database, &account).await {
         Ok(claimer) => claimer.map(|claimer| claimer.total).unwrap_or(0),
         Err(e) => {
             log::error!("Retrieving database claimer for {account}: {e}");

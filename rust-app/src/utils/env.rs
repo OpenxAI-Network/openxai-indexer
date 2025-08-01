@@ -41,11 +41,17 @@ pub fn chainid() -> u64 {
 }
 
 pub fn claimer() -> Address {
-    Address::parse_checksummed(env_var("CLAIMER").expect("No CLAIMER provided."), None)
-        .unwrap_or_else(|e| panic!("Invalid CLAIMER provided: {e}"))
+    Address::parse_checksummed(
+        env_var("CLAIMER").unwrap_or("0xc749169dB9C231E1797Aa9cD7f5B7a88AeD25b08".to_string()),
+        None,
+    )
+    .unwrap_or_else(|e| panic!("Invalid CLAIMER provided: {e}"))
 }
 
 pub fn genesis() -> Address {
-    Address::parse_checksummed(env_var("GENESIS").expect("No GENESIS provided."), None)
-        .unwrap_or_else(|e| panic!("Invalid GENESIS provided: {e}"))
+    Address::parse_checksummed(
+        env_var("GENESIS").unwrap_or("0x84599c907B42e9bc21F9FE26D9e5A5D3747109D3".to_string()),
+        None,
+    )
+    .unwrap_or_else(|e| panic!("Invalid GENESIS provided: {e}"))
 }
