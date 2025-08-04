@@ -57,27 +57,27 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                         return;
                     }
                 };
-                let transaction_index: i64 = match log.transaction_index {
-                    Some(transaction_index) => {match transaction_index.try_into() {
-                        Ok(transaction_index) => transaction_index,
+                let log_index: i64 = match log.log_index {
+                    Some(log_index) => {match log_index.try_into() {
+                        Ok(log_index) => log_index,
                         Err(e) => {
-                            log::error!("Transaction index {transaction_index} could not be converted into i64: {e}");
+                            log::error!("Log index {log_index} could not be converted into i64: {e}");
                             return;
                         }
                     }},
                     None => {
-                        log::error!("Transaction does not contain transaction_index");
+                        log::error!("Transaction does not contain log_index");
                         return;
                     }
                 };
 
-                log::info!("({transaction_hash}@{transaction_index}): {account} just participated in tier {tier} with {amount}");
+                log::info!("({transaction_hash}@{log_index}): {account} just participated in tier {tier} with {amount}");
                 let participated = DatabaseParticipated {
-                    account, amount, tier, transaction_hash, transaction_index
+                    account, amount, tier, transaction_hash, log_index
                 };
                 if let Some(e) = participated.insert(&database).await
                 {
-                    log::error!("Could not add participated event {tier}, {account}, {amount}, {transaction_hash}, {transaction_index} into database: {e}", tier = participated.tier, account = participated.account, amount = participated.account, transaction_hash = participated.transaction_hash, transaction_index = participated.transaction_index);
+                    log::error!("Could not add participated event {tier}, {account}, {amount}, {transaction_hash}, {log_index} into database: {e}", tier = participated.tier, account = participated.account, amount = participated.account, transaction_hash = participated.transaction_hash, log_index = participated.log_index);
                     return;
                 }
 

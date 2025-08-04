@@ -55,27 +55,27 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                         return;
                     }
                 };
-                let transaction_index: i64 = match log.transaction_index {
-                    Some(transaction_index) => {match transaction_index.try_into() {
-                        Ok(transaction_index) => transaction_index,
+                let log_index: i64 = match log.log_index {
+                    Some(log_index) => {match log_index.try_into() {
+                        Ok(log_index) => log_index,
                         Err(e) => {
-                            log::error!("Transaction index {transaction_index} could not be converted into i64: {e}");
+                            log::error!("Log index {log_index} could not be converted into i64: {e}");
                             return;
                         }
                     }},
                     None => {
-                        log::error!("Transaction does not contain transaction_index");
+                        log::error!("Transaction does not contain log_index");
                         return;
                     }
                 };
 
-                log::info!("({transaction_hash}@{transaction_index}): {account} just claimed {released} tokens (new total {total})");
+                log::info!("({transaction_hash}@{log_index}): {account} just claimed {released} tokens (new total {total})");
                 let tokens_claimed = DatabaseTokensClaimed {
-                    account, total, released, transaction_hash, transaction_index
+                    account, total, released, transaction_hash, log_index
                 };
                 if let Some(e) = tokens_claimed.insert(&database).await
                 {
-                    log::error!("Could not add tokens_claimed event {account}, {total}, {released}, {transaction_hash}, {transaction_index} into database: {e}", account = tokens_claimed.account, total = tokens_claimed.total, released = tokens_claimed.released, transaction_hash = tokens_claimed.transaction_hash, transaction_index = tokens_claimed.transaction_index);
+                    log::error!("Could not add tokens_claimed event {account}, {total}, {released}, {transaction_hash}, {log_index} into database: {e}", account = tokens_claimed.account, total = tokens_claimed.total, released = tokens_claimed.released, transaction_hash = tokens_claimed.transaction_hash, log_index = tokens_claimed.log_index);
                 }
             }
             Err(e) => {
