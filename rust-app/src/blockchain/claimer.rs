@@ -3,7 +3,7 @@ use futures_util::StreamExt;
 
 use crate::{
     database::{Database, tokens_claimed::DatabaseTokensClaimed},
-    utils::env::claimer,
+    utils::{decimals::to_6_decimals, env::claimer},
 };
 
 sol! {
@@ -34,14 +34,14 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                 log,
             )) => {
                 let account = event.account.to_string();
-                let total: i64 = match event.total.try_into() {
+                let total: i64 = match to_6_decimals(event.total).try_into() {
                     Ok(total) => total,
                     Err(e) => {
                         log::error!("Total {total} could not be converted into i64: {e}", total = event.total);
                         return;
                     }
                 };
-                let released: i64 = match event.released.try_into() {
+                let released: i64 = match to_6_decimals(event.released).try_into() {
                     Ok(tier) => tier,
                     Err(e) => {
                         log::error!("Released {released} could not be converted into i64: {e}", released = event.released);

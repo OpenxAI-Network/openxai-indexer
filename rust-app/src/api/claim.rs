@@ -4,14 +4,18 @@ use alloy::primitives::{Address, U256};
 use crate::{
     blockchain::claimer::Claim,
     database::{Database, claim::DatabaseClaim},
-    utils::wallet::get_claimer_signature,
+    utils::{decimals::to_18_decimals, wallet::get_claimer_signature},
 };
 
 #[get("/{account}/claim")]
 async fn get_claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
     match DatabaseClaim::get_by_account(&database, &account).await {
-        Ok(claim) => HttpResponse::Ok().json(claim.map(|claim| claim.total).unwrap_or(0)),
+        Ok(claim) => HttpResponse::Ok().json(
+            claim
+                .map(|claim| to_18_decimals(U256::from(claim.total)))
+                .unwrap_or(U256::from(0)),
+        ),
         Err(e) => {
             log::error!("Fetching claim for {account}: {e}");
             HttpResponse::InternalServerError().finish()
@@ -30,17 +34,16 @@ async fn post_claim(database: web::Data<Database>, path: web::Path<String>) -> i
     };
 
     let total = match DatabaseClaim::get_by_account(&database, &account).await {
-        Ok(claimer) => claimer.map(|claimer| claimer.total).unwrap_or(0),
+        Ok(claim) => claim
+            .map(|claim| to_18_decimals(U256::from(claim.total)))
+            .unwrap_or(U256::from(0)),
         Err(e) => {
             log::error!("Fetching claim for {account}: {e}");
             return HttpResponse::InternalServerError().finish();
         }
     };
 
-    let claim = Claim {
-        claimer,
-        total: U256::from(total),
-    };
+    let claim = Claim { claimer, total };
     let signature = match get_claimer_signature(&claim).await {
         Ok(signature) => signature,
         Err(e) => {
