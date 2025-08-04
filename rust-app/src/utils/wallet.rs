@@ -1,5 +1,4 @@
 use alloy::{
-    primitives::{B256, U256},
     signers::{Error, Signature, Signer, local::PrivateKeySigner},
     sol_types::{SolStruct, eip712_domain},
 };
@@ -19,7 +18,6 @@ pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, Error> {
         version: "1",
         chain_id: chainid(),
         verifying_contract: claimer(),
-        salt: B256::from(U256::from(0)),
     };
 
     // Derive the EIP-712 signing hash.

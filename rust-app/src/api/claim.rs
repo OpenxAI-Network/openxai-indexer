@@ -32,7 +32,7 @@ async fn post_claim(database: web::Data<Database>, path: web::Path<String>) -> i
     let total = match DatabaseClaim::get_by_account(&database, &account).await {
         Ok(claimer) => claimer.map(|claimer| claimer.total).unwrap_or(0),
         Err(e) => {
-            log::error!("Retrieving database claimer for {account}: {e}");
+            log::error!("Fetching claim for {account}: {e}");
             return HttpResponse::InternalServerError().finish();
         }
     };

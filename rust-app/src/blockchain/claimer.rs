@@ -1,6 +1,5 @@
 use alloy::{providers::Provider, sol};
 use futures_util::StreamExt;
-use serde::Serialize;
 
 use crate::{
     database::{Database, tokens_claimed::DatabaseTokensClaimed},
@@ -13,7 +12,6 @@ sol! {
         event TokensClaimed(address indexed account, uint256 total, uint256 released);
     }
 
-    #[derive(Serialize)]
     struct Claim {
         address claimer;
         uint256 total;
