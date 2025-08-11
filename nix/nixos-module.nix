@@ -85,8 +85,8 @@ in
       rpc = {
         http = lib.mkOption {
           type = lib.types.str;
-          default = "http://base-rpc.publicnode.com";
-          example = "http://base-sepolia-rpc.publicnode.com";
+          default = "https://base-rpc.publicnode.com";
+          example = "https://base-sepolia-rpc.publicnode.com";
           description = ''
             Blockchain HTTP RPC to query to smart contract calls.
           '';

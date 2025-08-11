@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql",
     .unwrap_or_else(|e| panic!("Could not create check_sum_credits_before_insert function: {e}"));
 
     sqlx::raw_sql(
-        "CREATE TRIGGER trg_check_sum_credits
+        "CREATE OR REPLACE TRIGGER trg_check_sum_credits
 BEFORE INSERT ON credits
 FOR EACH ROW
 EXECUTE FUNCTION check_sum_credits_before_insert()",
