@@ -64,14 +64,16 @@ impl DatabaseCredits {
             .await
     }
 
-    pub async fn get_by_account(database: &Database, account: &str) -> Result<Option<Self>, Error> {
+    pub async fn get_all_by_account(
+        database: &Database,
+        account: &str,
+    ) -> Result<Vec<Self>, Error> {
         query_as("SELECT account, credits, description, date FROM credits WHERE account = $1")
             .bind(account)
-            .fetch_optional(&database.connection)
+            .fetch_all(&database.connection)
             .await
     }
 
-    #[allow(dead_code)]
     pub async fn get_total_credits_by_account(
         database: &Database,
         account: &str,
