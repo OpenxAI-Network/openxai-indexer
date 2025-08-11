@@ -76,7 +76,7 @@ impl DatabaseCredits {
         database: &Database,
         account: &str,
     ) -> Result<Option<i64>, Error> {
-        query_scalar("SELECT SUM(credits) FROM credits WHERE account = $1")
+        query_scalar("SELECT SUM(credits)::INT8 FROM credits WHERE account = $1")
             .bind(account)
             .fetch_one(&database.connection)
             .await

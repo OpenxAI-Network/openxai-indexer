@@ -43,7 +43,7 @@ impl DatabaseClaim {
         database: &Database,
         account: &str,
     ) -> Result<Option<i64>, Error> {
-        query_scalar("SELECT SUM(amount) FROM claim WHERE account = $1")
+        query_scalar("SELECT SUM(amount)::INT8 FROM claim WHERE account = $1")
             .bind(account)
             .fetch_one(&database.connection)
             .await
