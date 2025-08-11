@@ -12,7 +12,7 @@ use crate::{
 sol! {
     #[sol(rpc)]
     contract USDC {
-        event Transfer(address from, address to, uint256 value);
+        event Transfer(address indexed from, address indexed to, uint256 value);
     }
 }
 
