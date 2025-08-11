@@ -75,7 +75,7 @@ pub fn genesis() -> Address {
 
 pub fn ownaiv1() -> Address {
     Address::parse_checksummed(
-        env_var("OWNAIV1").unwrap_or("0x1962d34E472E205Bf504Aa305A375c8895Eaf9b4".to_string()),
+        env_var("OWNAIV1").unwrap_or("0x5d3a48B6f16Ba9a830b19B452d8DAA0409e0FE05".to_string()),
         None,
     )
     .unwrap_or_else(|e| panic!("Invalid OWNAIV1 provided: {e}"))

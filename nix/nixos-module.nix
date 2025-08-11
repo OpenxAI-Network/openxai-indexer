@@ -143,8 +143,8 @@ in
 
         ownaiv1 = lib.mkOption {
           type = lib.types.str;
-          default = "0x1962d34E472E205Bf504Aa305A375c8895Eaf9b4";
-          example = "0x1962d34E472E205Bf504Aa305A375c8895Eaf9b4";
+          default = "0x5d3a48B6f16Ba9a830b19B452d8DAA0409e0FE05";
+          example = "0x5d3a48B6f16Ba9a830b19B452d8DAA0409e0FE05";
           description = ''
             OpenxAITokenizedServerV1 contract address. 
           '';
