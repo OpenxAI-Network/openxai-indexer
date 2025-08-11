@@ -29,7 +29,7 @@ pub struct OwnerServer {
     pub controller: String,
     pub expires: i64,
 }
-#[get("/{owner}/owner_servers")]
+#[get("/ownaiv1/{owner}/owner_servers")]
 async fn get_owner_tokens(
     database: web::Data<Database>,
     path: web::Path<String>,
@@ -59,7 +59,7 @@ pub struct ControllerServer {
     pub chain: String,
     pub token_id: String,
 }
-#[get("/{controller}/controller_servers")]
+#[get("/ownaiv1/{controller}/controller_servers")]
 async fn get_controller_tokens(
     database: web::Data<Database>,
     path: web::Path<String>,
@@ -87,7 +87,7 @@ pub struct ControllerUpdate {
     pub controller: String,
     pub owner_signature: String,
 }
-#[post("/{token_id}/controller")]
+#[post("/ownaiv1/{token_id}/controller")]
 async fn post_controller(
     database: web::Data<Database>,
     provider: web::Data<DynProvider>,
@@ -143,7 +143,7 @@ pub struct ExpiresExtend {
     pub payer_address: String,
     pub payer_signature: String,
 }
-#[post("/{chain}/{token_id}/expires")]
+#[post("/ownaiv1/{chain}/{token_id}/expires")]
 async fn post_expires(
     database: web::Data<Database>,
     provider: web::Data<DynProvider>,
@@ -254,7 +254,7 @@ pub struct Mint {
     pub payer_address: String,
     pub payer_signature: String,
 }
-#[post("/{chain}/mint")]
+#[post("/ownaiv1/{chain}/mint")]
 async fn post_mint(
     database: web::Data<Database>,
     provider: web::Data<DynProvider>,

@@ -17,9 +17,9 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(credits::get_credits);
     cfg.service(credits::get_total_credits);
 
-    cfg.service(web::scope("/ownai_v1").service(ownai_v1::get_owner_tokens))
-        .service(ownai_v1::get_controller_tokens)
-        .service(ownai_v1::post_controller)
-        .service(ownai_v1::post_expires)
-        .service(ownai_v1::post_mint);
+    cfg.service(ownai_v1::get_owner_tokens);
+    cfg.service(ownai_v1::get_controller_tokens);
+    cfg.service(ownai_v1::post_controller);
+    cfg.service(ownai_v1::post_expires);
+    cfg.service(ownai_v1::post_mint);
 }
