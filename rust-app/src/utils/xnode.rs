@@ -138,7 +138,7 @@ pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer
         collection = server.collection,
     );
     let domain = format!("{subdomain}.openxai.network");
-    let deployer = get_v1_deployer(domain.clone());
+    let deployer = get_v1_deployer(subdomain.replace(".", "-"));
     let deployment = match deployer
         .deploy(get_deploy_input(
             domain.clone(),
