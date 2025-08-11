@@ -116,7 +116,7 @@ impl DatabaseTokenizedServer {
         )
         .bind(collection)
         .bind(chain)
-        .fetch_optional(&database.connection)
+        .fetch_one(&database.connection)
         .await
     }
 

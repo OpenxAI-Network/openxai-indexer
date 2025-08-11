@@ -18,7 +18,7 @@ pub async fn create_table(connection: &DatabaseConnection) {
         "CREATE OR REPLACE FUNCTION check_sum_credits_before_insert()
 RETURNS TRIGGER AS $$
 DECLARE
-    current_sum BIGINT;
+    current_sum INT8;
 BEGIN
     SELECT COALESCE(SUM(credits), 0)
     INTO current_sum
@@ -76,9 +76,9 @@ impl DatabaseCredits {
         database: &Database,
         account: &str,
     ) -> Result<Option<i64>, Error> {
-        query_scalar("SELECT SUM(credits) FROM claim WHERE account = $1")
+        query_scalar("SELECT SUM(credits) FROM credits WHERE account = $1")
             .bind(account)
-            .fetch_optional(&database.connection)
+            .fetch_one(&database.connection)
             .await
     }
 
