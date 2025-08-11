@@ -131,7 +131,7 @@ impl DatabaseTokenizedServer {
             expires,
         } = self;
 
-        query("INSERT INTO tokenized_server(collection, chain, token_id, owner, controller, deployment, expires) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
+        query("INSERT INTO tokenized_server(collection, chain, token_id, owner, controller, deployment, expires) VALUES ($1, $2, $3, $4, $5, $6, $7);")
         .bind(collection)
         .bind(chain)
         .bind(token_id)
