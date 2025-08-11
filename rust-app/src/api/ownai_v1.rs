@@ -87,16 +87,15 @@ pub struct ControllerUpdate {
     pub controller: String,
     pub owner_signature: String,
 }
-#[post("/ownaiv1/{token_id}/controller")]
+#[post("/ownaiv1/{chain}/{token_id}/controller")]
 async fn post_controller(
     database: web::Data<Database>,
     provider: web::Data<DynProvider>,
-    path: web::Path<String>,
+    path: web::Path<(String, String)>,
     data: web::Json<ControllerUpdate>,
 ) -> impl Responder {
-    let token_id = path.into_inner();
+    let (chain, token_id) = path.into_inner();
     let collection = Collection::OwnAIv1.to_string();
-    let chain = Chain::Base.to_string();
 
     let mut server = match DatabaseTokenizedServer::get_by_collection_token_id(
         &database,

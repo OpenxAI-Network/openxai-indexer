@@ -1,4 +1,4 @@
-use actix_web::web::{self, ServiceConfig};
+use actix_web::web::ServiceConfig;
 
 pub mod claim;
 pub mod credits;

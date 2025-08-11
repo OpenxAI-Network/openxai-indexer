@@ -64,8 +64,12 @@ impl XnodeController for ControlledXnode {
 
     fn controller_config(&self, controller: String) -> String {
         let manager = self.session.base_url.replace("https://", "");
+        let app = self.session.base_url.replace("https://manager.", "");
         format!(
-            "services.xnode-auth.domains.\"{manager}\".accessList.\"{controller}\" = {{ paths = \"^(?:\\/config.*|\\/file\\/container:.*|\\/info.*|\\/process\\/container:.*|\\/usage.*|\\/request.*)\"; }};"
+            "\
+services.xnode-auth.domains.\"{manager}\".accessList.\"{controller}\" = {{ paths = \"^(?:\\/config.*|\\/file\\/container:.*|\\/info.*|\\/process\\/container:.*|\\/usage.*|\\/request.*)\"; }};
+services.xnode-auth.domains.\"{app}\".accessList.\"{controller}\" = {{ }};\
+"
         )
     }
 }

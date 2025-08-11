@@ -27,7 +27,7 @@ pub fn address_to_xnode_user(address: Address) -> String {
 }
 
 pub fn str_to_xnode_user(address: &str) -> String {
-    address.replace("0x", "eth:")
+    address.replace("0x", "eth:").to_ascii_lowercase()
 }
 
 pub fn get_v1_deployer(name: String) -> HyperstackDeployer {
@@ -217,7 +217,12 @@ pub async fn undeploy(database: &Database, server: &mut DatabaseTokenizedServer)
 
     match deployment {
         TokenizedServerDeployment::Hyperstack { id } => {
-            let deployer = get_v1_deployer(format!("ownaiv1@{}", server.token_id));
+            let deployer = get_v1_deployer(format!(
+                "{collection}-{chain}-{token_id}",
+                collection = server.collection,
+                chain = server.chain,
+                token_id = server.token_id
+            ));
             if let Some(e) = deployer.undeploy(HyperstackOutput { id }).await {
                 log::error!(
                     "UNDEPLOYMENT OF {collection}@{chain}@{token_id} FAILED: {e:?}",
