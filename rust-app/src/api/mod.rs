@@ -20,5 +20,6 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(web::scope("/ownai_v1").service(ownai_v1::get_owner_tokens))
         .service(ownai_v1::get_controller_tokens)
         .service(ownai_v1::post_controller)
-        .service(ownai_v1::post_expires);
+        .service(ownai_v1::post_expires)
+        .service(ownai_v1::post_mint);
 }

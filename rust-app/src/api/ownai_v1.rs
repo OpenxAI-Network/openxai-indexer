@@ -274,6 +274,9 @@ async fn post_mint(
     }
 
     let chain = path.into_inner();
+    if chain != Chain::Base.to_string() {
+        return HttpResponse::BadRequest().finish();
+    }
     let collection = Collection::OwnAIv1.to_string();
 
     let message = format!("Mint new {collection}@{chain} to {to}", to = data.to);
@@ -318,5 +321,5 @@ async fn post_mint(
     mint_tokenized_server(provider.get_ref(), to, token_id).await;
     deploy_v1(&database, &mut server).await;
 
-    HttpResponse::Ok().finish()
+    HttpResponse::Ok().json(token_id)
 }
