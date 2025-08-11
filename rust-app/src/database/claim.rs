@@ -1,11 +1,14 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{Error, FromRow, query, query_as};
+use sqlx::{Error, FromRow, query, query_as, query_scalar};
 
-use crate::database::{Database, DatabaseConnection, participated::DatabaseParticipated};
+use crate::{
+    database::{Database, DatabaseConnection, participated::DatabaseParticipated},
+    utils::time::get_time_i64,
+};
 
 pub async fn create_table(connection: &DatabaseConnection) {
     sqlx::raw_sql(
-        "CREATE TABLE IF NOT EXISTS claim(account TEXT NOT NULL PRIMARY KEY, total INT8 NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS claim(id SERIAL PRIMARY KEY, account TEXT NOT NULL, amount INT8 NOT NULL, description TEXT NOT NULL, date INT8 NOT NULL)",
     )
     .execute(connection)
     .await
@@ -15,31 +18,53 @@ pub async fn create_table(connection: &DatabaseConnection) {
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct DatabaseClaim {
     pub account: String,
-    pub total: i64,
+    pub amount: i64,
+    pub description: String,
+    pub date: i64,
 }
 
 impl DatabaseClaim {
+    #[allow(dead_code)]
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
-        query_as("SELECT account, total FROM claim")
+        query_as("SELECT account, amount, description, date FROM claim")
             .fetch_all(&database.connection)
             .await
     }
 
+    #[allow(dead_code)]
     pub async fn get_by_account(database: &Database, account: &str) -> Result<Option<Self>, Error> {
-        query_as("SELECT account, total FROM claim WHERE account = $1")
+        query_as("SELECT account, amount, description, date FROM claim WHERE account = $1")
             .bind(account)
             .fetch_optional(&database.connection)
             .await
     }
 
-    pub async fn add(&self, database: &Database) -> Option<Error> {
-        let Self { account, total } = self;
+    pub async fn get_total_amount_by_account(
+        database: &Database,
+        account: &str,
+    ) -> Result<Option<i64>, Error> {
+        query_scalar("SELECT SUM(amount) FROM claim WHERE account = $1")
+            .bind(account)
+            .fetch_optional(&database.connection)
+            .await
+    }
 
-        query("INSERT INTO claim(account, total) VALUES ($1, $2) ON CONFLICT(account) DO UPDATE SET total = claim.total + EXCLUDED.total;")
-        .bind(account)
-        .bind(total)
-        .execute(&database.connection)
-        .await.err()
+    pub async fn insert(&self, database: &Database) -> Option<Error> {
+        let Self {
+            account,
+            amount,
+            description,
+            date,
+        } = self;
+
+        query("INSERT INTO claim(account, amount, description, date) VALUES ($1, $2, $3, $4);")
+            .bind(account)
+            .bind(amount)
+            .bind(description)
+            .bind(date)
+            .execute(&database.connection)
+            .await
+            .err()
     }
 }
 
@@ -66,7 +91,13 @@ impl From<&DatabaseParticipated> for DatabaseClaim {
         };
         DatabaseClaim {
             account: val.account.clone(),
-            total: ((val.amount as f64) * multiplier) as i64,
+            amount: ((val.amount as f64) * multiplier) as i64,
+            description: format!(
+                "Genesis participation {transaction_hash}@{log_index}",
+                transaction_hash = val.transaction_hash,
+                log_index = val.log_index
+            ),
+            date: get_time_i64(),
         }
     }
 }

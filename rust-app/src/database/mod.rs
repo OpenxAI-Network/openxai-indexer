@@ -5,6 +5,7 @@ use crate::utils::env::database;
 pub mod claim;
 pub mod credits;
 pub mod participated;
+pub mod tokenized_server;
 pub mod tokens_claimed;
 
 pub type DatabaseConnection = Pool<Postgres>;
@@ -32,6 +33,7 @@ pub async fn create_connection() -> DatabaseConnection {
     claim::create_table(&connection).await;
     credits::create_table(&connection).await;
     participated::create_table(&connection).await;
+    tokenized_server::create_table(&connection).await;
     tokens_claimed::create_table(&connection).await;
 
     connection

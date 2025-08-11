@@ -24,7 +24,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
         .TokensClaimed_filter()
         .watch()
         .await
-        .unwrap_or_else(|e| panic!("Could not subscribe to Participated event: {e}"))
+        .unwrap_or_else(|e| panic!("Could not subscribe to tokens claimed event: {e}"))
         .into_stream();
 
     tokens_claimed_stream
@@ -75,7 +75,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                 };
                 if let Some(e) = tokens_claimed.insert(&database).await
                 {
-                    log::error!("Could not add tokens_claimed event {account}, {total}, {released}, {transaction_hash}, {log_index} into database: {e}", account = tokens_claimed.account, total = tokens_claimed.total, released = tokens_claimed.released, transaction_hash = tokens_claimed.transaction_hash, log_index = tokens_claimed.log_index);
+                    log::error!("COULD NOT INSERT TOKENS CLAIMED {tokens_claimed:?} INTO DATABASE: {e}");
                 }
             }
             Err(e) => {

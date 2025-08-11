@@ -77,20 +77,19 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                 };
                 if let Some(e) = participated.insert(&database).await
                 {
-                    log::error!("Could not add participated event {tier}, {account}, {amount}, {transaction_hash}, {log_index} into database: {e}", tier = participated.tier, account = participated.account, amount = participated.account, transaction_hash = participated.transaction_hash, log_index = participated.log_index);
-                    return;
+                    log::error!("COULD NOT INSERT PARTICIPATED EVENT {participated:?} INTO DATABASE: {e}");
                 }
 
                 let claim: DatabaseClaim = (&participated).into();
-                if let Some(e) = claim.add(&database).await
+                if let Some(e) = claim.insert(&database).await
                 {
-                    log::error!("Could not add {total} to claim entry for {account} into database: {e}", total = claim.total, account = claim.account);
+                    log::error!("COULD NOT INSERT CLAIM {claim:?} INTO DATABASE: {e}");
                 }
 
                 let credits: DatabaseCredits = (&participated).into();
-                if let Some(e) = credits.add(&database).await
+                if let Some(e) = credits.insert(&database).await
                 {
-                    log::error!("Could not add {credits} to credits entry for {account} into database: {e}", credits = credits.credits, account = credits.account);
+                    log::error!("COULD NOT INSERT CREDITS {credits:?} INTO DATABASE: {e}");
                 }
             }
             Err(e) => {

@@ -22,6 +22,7 @@ pub struct DatabaseParticipated {
 }
 
 impl DatabaseParticipated {
+    #[allow(dead_code)]
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
         query_as("SELECT tier, account, amount, transaction_hash, log_index FROM participated")
             .fetch_all(&database.connection)

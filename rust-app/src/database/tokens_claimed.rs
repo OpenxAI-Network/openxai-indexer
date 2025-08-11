@@ -22,6 +22,7 @@ pub struct DatabaseTokensClaimed {
 }
 
 impl DatabaseTokensClaimed {
+    #[allow(dead_code)]
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
         query_as("SELECT account, total, released, transaction_hash, log_index FROM tokens_claimed")
             .fetch_all(&database.connection)

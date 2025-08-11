@@ -48,6 +48,22 @@ in
         '';
       };
 
+      tokenownerkey = lib.mkOption {
+        type = lib.types.str;
+        example = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+        description = ''
+          The private key of the tokenized server owner.
+        '';
+      };
+
+      tokenminterkey = lib.mkOption {
+        type = lib.types.str;
+        example = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+        description = ''
+          The private key of the tokenized server minter.
+        '';
+      };
+
       database = lib.mkOption {
         type = lib.types.str;
         default = "postgres:openxai-indexer?host=/run/postgresql";
@@ -57,13 +73,33 @@ in
         '';
       };
 
-      rpc = lib.mkOption {
+      subdomaindistributor = lib.mkOption {
         type = lib.types.str;
-        default = "wss://base-rpc.publicnode.com";
-        example = "wss://base-sepolia-rpc.publicnode.com";
+        default = "http://subdomain-distributor.local:42923";
+        example = "http://subdomain-distributor.local:42923";
         description = ''
-          Blockchain RPC to subscribe to smart contract events.
+          Subdomain distributor to acquire tokenized server subdomains.
         '';
+      };
+
+      rpc = {
+        http = lib.mkOption {
+          type = lib.types.str;
+          default = "http://base-rpc.publicnode.com";
+          example = "http://base-sepolia-rpc.publicnode.com";
+          description = ''
+            Blockchain HTTP RPC to query to smart contract calls.
+          '';
+        };
+
+        ws = lib.mkOption {
+          type = lib.types.str;
+          default = "wss://base-rpc.publicnode.com";
+          example = "wss://base-sepolia-rpc.publicnode.com";
+          description = ''
+            Blockchain WebSocket RPC to subscribe to smart contract events.
+          '';
+        };
       };
 
       chainId = lib.mkOption {
@@ -104,6 +140,50 @@ in
             OpenxAIGenesis contract address. 
           '';
         };
+
+        ownaiv1 = lib.mkOption {
+          type = lib.types.str;
+          default = "0x1962d34E472E205Bf504Aa305A375c8895Eaf9b4";
+          example = "0x1962d34E472E205Bf504Aa305A375c8895Eaf9b4";
+          description = ''
+            OpenxAITokenizedServerV1 contract address. 
+          '';
+        };
+
+        deposit = lib.mkOption {
+          type = lib.types.str;
+          default = "0x1EdE9dE47e5E3B8941884e7f5DDa43D82570180D";
+          example = "0x1EdE9dE47e5E3B8941884e7f5DDa43D82570180D";
+          description = ''
+            OpenxAICreditsDeposit contract address. 
+          '';
+        };
+
+        usdc = lib.mkOption {
+          type = lib.types.str;
+          default = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+          example = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
+          description = ''
+            USDC contract address. 
+          '';
+        };
+      };
+
+      ownaiv1price = lib.mkOption {
+        type = lib.types.ints.unsigned;
+        default = 100000000;
+        example = 150000000;
+        description = ''
+          The cost in 6 decimals of renting a OwnAIV1 server for 1 month
+        '';
+      };
+
+      hyperstackapikey = lib.mkOption {
+        type = lib.types.str;
+        example = "7a12411b-0074-4d01-a375-ca91376f0bb8";
+        description = ''
+          The api key to use for hyperstack deployments.
+        '';
       };
 
       openFirewall = lib.mkOption {
@@ -135,11 +215,20 @@ in
         PORT = toString cfg.port;
         RUST_LOG = cfg.verbosity;
         CLAIMERKEY = cfg.claimerkey;
+        TOKENOWNERKEY = cfg.tokenownerkey;
+        TOKENMINTERKEY = cfg.tokenminterkey;
         DATABASE = cfg.database;
-        RPC = cfg.rpc;
+        SUBDOMAINDISTRIBUTOR = cfg.subdomaindistributor;
+        HTTPRPC = cfg.rpc.http;
+        WSRPC = cfg.rpc.ws;
         CHAINID = toString cfg.chainId;
         CLAIMER = cfg.contracts.claimer;
         GENESIS = cfg.contracts.genesis;
+        OWNAIV1 = cfg.contracts.ownaiv1;
+        DEPOSIT = cfg.contracts.deposit;
+        USDC = cfg.contracts.usdc;
+        OWNAIV1PRICE = toString cfg.ownaiv1price;
+        HYPERSTACKAPIKEY = cfg.hyperstackapikey;
       };
       serviceConfig = {
         ExecStart = "${lib.getExe openxai-indexer}";
