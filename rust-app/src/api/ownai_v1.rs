@@ -222,6 +222,7 @@ async fn post_expires(
     HttpResponse::Ok().finish()
 }
 
+#[derive(Clone)]
 pub struct OwnAIV1TokenCounter {
     counter: Arc<AtomicI64>,
 }

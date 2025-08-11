@@ -26,6 +26,7 @@ async fn main() {
         .connect(&httprpc())
         .await
         .unwrap_or_else(|e| panic!("Could not connect to HTTP rpc provider: {e}"));
+    let token_counter = api::ownai_v1::OwnAIV1TokenCounter::new(database.clone()).await;
 
     if let Err(e) = try_join!(
         spawn(start_event_listeners(database.clone())),
@@ -36,9 +37,7 @@ async fn main() {
                     .wrap(Cors::permissive())
                     .app_data(web::Data::new(database.clone()))
                     .app_data(web::Data::new(DynProvider::new(provider.clone())))
-                    .app_data(web::Data::new(api::ownai_v1::OwnAIV1TokenCounter::new(
-                        database.clone(),
-                    )))
+                    .app_data(web::Data::new(token_counter.clone()))
                     .service(web::scope("/api").configure(api::configure))
             })
             .bind(format!(
