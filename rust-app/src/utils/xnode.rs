@@ -193,8 +193,10 @@ pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer
                 .and_then(|response| response.error_for_status())
             {
                 log::error!("SUBDOMAIN RESERVATION FOR {subdomain} -> {ipv4} FAILED: {e}");
-                break;
+            } else {
+                log::info!("Subdomain {subdomain} reserved for {ipv4}");
             }
+            break;
         }
     }
 }
