@@ -98,7 +98,7 @@ impl DatabaseTokenizedServer {
         chain: &str,
         token_id: &str,
     ) -> Result<Option<Self>, Error> {
-        query_as("SELECT collection, chain, token_id, owner, controller, deployment, expires, total FROM tokenized_server WHERE collection = $1 AND chain = $2 AND token_id = $3")
+        query_as("SELECT collection, chain, token_id, owner, controller, deployment, expires FROM tokenized_server WHERE collection = $1 AND chain = $2 AND token_id = $3")
             .bind(collection)
             .bind(chain)
             .bind(token_id)
