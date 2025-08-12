@@ -24,6 +24,38 @@ use crate::{
 };
 
 #[derive(Serialize, Deserialize)]
+pub struct PublicServer {
+    pub owner: String,
+    pub expires: i64,
+}
+#[get("/ownaiv1/{chain}/{token_id}/server")]
+async fn get_server(
+    database: web::Data<Database>,
+    path: web::Path<(String, String)>,
+) -> impl Responder {
+    let (chain, token_id) = path.into_inner();
+    let collection = Collection::OwnAIv1.to_string();
+
+    match DatabaseTokenizedServer::get_by_collection_token_id(
+        &database,
+        &collection,
+        &chain,
+        &token_id,
+    )
+    .await
+    {
+        Ok(server) => match server {
+            Some(server) => HttpResponse::Ok().json(PublicServer {
+                owner: server.owner,
+                expires: server.expires,
+            }),
+            None => HttpResponse::BadRequest().finish(),
+        },
+        Err(_e) => HttpResponse::BadRequest().finish(),
+    }
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct OwnerServer {
     pub chain: String,
     pub token_id: String,
@@ -31,7 +63,7 @@ pub struct OwnerServer {
     pub expires: i64,
 }
 #[get("/ownaiv1/{owner}/owner_servers")]
-async fn get_owner_tokens(
+async fn get_owner_servers(
     database: web::Data<Database>,
     path: web::Path<String>,
 ) -> impl Responder {
@@ -61,7 +93,7 @@ pub struct ControllerServer {
     pub token_id: String,
 }
 #[get("/ownaiv1/{controller}/controller_servers")]
-async fn get_controller_tokens(
+async fn get_controller_servers(
     database: web::Data<Database>,
     path: web::Path<String>,
 ) -> impl Responder {

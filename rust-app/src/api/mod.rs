@@ -21,8 +21,9 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(staking::get_staking);
     cfg.service(staking::get_total_staking);
 
-    cfg.service(ownai_v1::get_owner_tokens);
-    cfg.service(ownai_v1::get_controller_tokens);
+    cfg.service(ownai_v1::get_server);
+    cfg.service(ownai_v1::get_owner_servers);
+    cfg.service(ownai_v1::get_controller_servers);
     cfg.service(ownai_v1::post_controller);
     cfg.service(ownai_v1::post_expires);
     cfg.service(ownai_v1::post_mint);
