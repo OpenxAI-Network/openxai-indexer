@@ -85,7 +85,6 @@ impl DatabaseTokenizedServer {
             .await
     }
 
-    #[allow(dead_code)]
     pub async fn get_all_not_expired(database: &Database) -> Result<Vec<Self>, Error> {
         query_as("SELECT collection, chain, token_id, owner, controller, deployment, expires FROM tokenized_server WHERE expires > EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)")
             .fetch_all(&database.connection)

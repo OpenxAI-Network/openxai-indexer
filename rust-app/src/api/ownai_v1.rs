@@ -11,6 +11,7 @@ use crate::{
     database::{
         Database,
         credits::DatabaseCredits,
+        staking::DatabaseStaking,
         tokenized_server::{Chain, Collection, DatabaseTokenizedServer},
     },
     utils::{
@@ -322,4 +323,23 @@ async fn post_mint(
     deploy_v1(&database, &mut server).await;
 
     HttpResponse::Ok().json(token_id)
+}
+
+#[get("/ownaiv1/{chain}/{token_id}/staking")]
+async fn get_staking(
+    database: web::Data<Database>,
+    path: web::Path<(String, String)>,
+) -> impl Responder {
+    let (chain, token_id) = path.into_inner();
+    let collection = Collection::OwnAIv1.to_string();
+
+    match DatabaseStaking::get_all_by_collection_token_id(&database, &collection, &chain, &token_id)
+        .await
+    {
+        Ok(staking) => HttpResponse::Ok().json(staking),
+        Err(e) => {
+            log::error!("Fetching staking for {collection}@{chain}@{token_id}: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
 }

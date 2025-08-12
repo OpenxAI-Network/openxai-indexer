@@ -2,7 +2,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Error, FromRow, query, query_as, query_scalar};
 
 use crate::{
-    database::{Database, DatabaseConnection, participated::DatabaseParticipated},
+    database::{
+        Database, DatabaseConnection, participated::DatabaseParticipated, staking::DatabaseStaking,
+    },
     utils::time::get_time_i64,
 };
 
@@ -32,10 +34,13 @@ impl DatabaseClaim {
     }
 
     #[allow(dead_code)]
-    pub async fn get_by_account(database: &Database, account: &str) -> Result<Option<Self>, Error> {
+    pub async fn get_all_by_account(
+        database: &Database,
+        account: &str,
+    ) -> Result<Vec<Self>, Error> {
         query_as("SELECT account, amount, description, date FROM claim WHERE account = $1")
             .bind(account)
-            .fetch_optional(&database.connection)
+            .fetch_all(&database.connection)
             .await
     }
 
@@ -98,6 +103,22 @@ impl From<&DatabaseParticipated> for DatabaseClaim {
                 log_index = val.log_index
             ),
             date: get_time_i64(),
+        }
+    }
+}
+
+impl From<&DatabaseStaking> for DatabaseClaim {
+    fn from(val: &DatabaseStaking) -> Self {
+        DatabaseClaim {
+            account: val.account.clone(),
+            amount: val.amount,
+            description: format!(
+                "Staking rewards for {collection}@{chain}@{token_id}",
+                collection = val.collection,
+                chain = val.chain,
+                token_id = val.token_id
+            ),
+            date: val.date,
         }
     }
 }

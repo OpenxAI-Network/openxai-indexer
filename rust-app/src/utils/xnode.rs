@@ -267,7 +267,7 @@ pub async fn undeploy_expired_servers(database: Database) {
             match DatabaseTokenizedServer::get_all_deployed_expired(&database).await {
                 Ok(expired_servers) => expired_servers,
                 Err(e) => {
-                    log::warn!("Could not get expired servers: {e}");
+                    log::error!("COULD NOT GET EXPIRED SERVERS: {e}");
                     continue;
                 }
             };
