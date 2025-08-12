@@ -22,7 +22,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
     let transfer_stream = usdc
         .Transfer_filter()
         .topic2(deposit)
-        .watch()
+        .subscribe()
         .await
         .unwrap_or_else(|e| panic!("Could not subscribe to USDC transfer event: {e}"))
         .into_stream();

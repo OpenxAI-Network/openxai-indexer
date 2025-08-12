@@ -24,7 +24,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
     let genesis = OpenxAIGenesis::new(genesis(), provider);
     let participated_stream = genesis
         .Participated_filter()
-        .watch()
+        .subscribe()
         .await
         .unwrap_or_else(|e| panic!("Could not subscribe to Participated event: {e}"))
         .into_stream();

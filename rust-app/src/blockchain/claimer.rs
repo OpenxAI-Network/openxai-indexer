@@ -22,7 +22,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
     let claimer = OpenxAIClaimer::new(claimer(), provider);
     let tokens_claimed_stream = claimer
         .TokensClaimed_filter()
-        .watch()
+        .subscribe()
         .await
         .unwrap_or_else(|e| panic!("Could not subscribe to tokens claimed event: {e}"))
         .into_stream();

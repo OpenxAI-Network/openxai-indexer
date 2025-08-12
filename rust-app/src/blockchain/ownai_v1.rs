@@ -25,7 +25,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
     let ownaiv1 = OpenxAITokenizedServerV1::new(ownaiv1(), provider);
     let transfer_stream = ownaiv1
         .Transfer_filter()
-        .watch()
+        .subscribe()
         .await
         .unwrap_or_else(|e| panic!("Could not subscribe to tokenized server transfer event: {e}"))
         .into_stream();
