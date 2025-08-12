@@ -16,7 +16,7 @@ use crate::{
         tokenized_server::{DatabaseTokenizedServer, TokenizedServerDeployment},
     },
     utils::{
-        controller::ControlledXnode,
+        controller::{ControlledXnode, get_controller_config},
         env::{hyperstackapikey, subdomaindistributor},
         wallet::get_tokenized_server_owner,
     },
@@ -42,14 +42,26 @@ pub fn get_v1_deployer(name: String) -> HyperstackDeployer {
     )
 }
 
-pub fn get_deploy_input(domain: String, xnode_owner: String) -> DeployInput {
+pub fn get_deploy_input(domain: String, xnode_owner: String, controller: String) -> DeployInput {
+    let base_url = format!("https://manager.{domain}");
+    let controller_config = get_controller_config(base_url.clone(), controller);
     DeployInput {
         acme_email: Some("sam@openxai.org".to_string()),
         domain: Some(format!("manager.{domain}")),
         encrypted: None,
         initial_config: Some(format!(
-            "services.nginx.serverNamesHashBucketSize = 128; nixpkgs.config.allowUnfree = true; hardware.graphics = {{ enable = true; extraPackages = [ pkgs.nvidia-vaapi-driver ]; }}; hardware.nvidia.open = true; services.xserver.videoDrivers = [ \\\\\\\"nvidia\\\\\\\" ]; services.xnode-reverse-proxy.rules.\\\\\\\"{domain}\\\\\\\" = [ {{ forward = \\\\\\\"http://xnode-ai-chat.container:8080\\\\\\\"; }} ];"
-        )),
+            "\
+# START XNODE CONTROLLER {base_url}
+{controller_config}
+# END XNODE CONTROLLER {base_url}
+services.nginx.serverNamesHashBucketSize = 128;
+nixpkgs.config.allowUnfree = true;
+hardware.graphics = {{ enable = true; extraPackages = [ pkgs.nvidia-vaapi-driver ]; }};
+hardware.nvidia.open = true;
+services.xserver.videoDrivers = [ \"nvidia\" ];
+services.xnode-reverse-proxy.rules.\"{domain}\" = [ {{ forward = \"http://xnode-ai-chat.container:8080\"; }} ];\
+"
+        ).replace("\"", "\\\"").replace("\n", "\\n").replace("\\", "\\\\\\")),
         user_passwd: None,
         xnode_owner: Some(xnode_owner),
     }
@@ -143,6 +155,7 @@ pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer
         .deploy(get_deploy_input(
             domain.clone(),
             address_to_xnode_user(get_tokenized_server_owner().address()),
+            server.controller.clone(),
         ))
         .await
     {

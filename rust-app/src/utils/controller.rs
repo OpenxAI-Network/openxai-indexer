@@ -63,15 +63,19 @@ impl XnodeController for ControlledXnode {
     }
 
     fn controller_config(&self, controller: String) -> String {
-        let manager = self.session.base_url.replace("https://", "");
-        let app = self.session.base_url.replace("https://manager.", "");
-        format!(
+        get_controller_config(self.session.base_url.clone(), controller)
+    }
+}
+
+pub fn get_controller_config(base_url: String, controller: String) -> String {
+    let manager = base_url.replace("https://", "");
+    let app = base_url.replace("https://manager.", "");
+    format!(
             "\
 services.xnode-auth.domains.\"{manager}\".accessList.\"{controller}\" = {{ paths = \"^(?:\\/config.*|\\/file\\/container:.*|\\/info.*|\\/process\\/container:.*|\\/usage.*|\\/request.*)\"; }};
 services.xnode-auth.domains.\"{app}\".accessList.\"{controller}\" = {{ }};\
 "
         )
-    }
 }
 
 async fn get_session(xnode_id: &str) -> Result<Session, Error> {
