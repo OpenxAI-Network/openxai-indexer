@@ -2,6 +2,7 @@ use actix_web::web::ServiceConfig;
 
 pub mod claim;
 pub mod credits;
+pub mod deployment_signature;
 pub mod ownai_v1;
 pub mod participated;
 pub mod staking;
@@ -11,15 +12,13 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(claim::get_claim);
     cfg.service(claim::post_claim);
 
-    cfg.service(tokens_claimed::get_tokens_claimed);
-
     cfg.service(credits::get_credits);
     cfg.service(credits::get_total_credits);
 
-    cfg.service(participated::get_participated);
-
-    cfg.service(staking::get_staking);
-    cfg.service(staking::get_total_staking);
+    cfg.service(deployment_signature::get_latest);
+    cfg.service(deployment_signature::get_app_total);
+    cfg.service(deployment_signature::get_app_version_total);
+    cfg.service(deployment_signature::post_upload);
 
     cfg.service(ownai_v1::get_server);
     cfg.service(ownai_v1::get_owner_servers);
@@ -28,4 +27,11 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(ownai_v1::post_expires);
     cfg.service(ownai_v1::post_mint);
     cfg.service(ownai_v1::get_staking);
+
+    cfg.service(participated::get_participated);
+
+    cfg.service(staking::get_staking);
+    cfg.service(staking::get_total_staking);
+
+    cfg.service(tokens_claimed::get_tokens_claimed);
 }

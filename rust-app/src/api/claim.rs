@@ -29,7 +29,7 @@ async fn get_claim_total(database: web::Data<Database>, path: web::Path<String>)
                 .unwrap_or(U256::from(0)),
         ),
         Err(e) => {
-            log::error!("Fetching claim for {account}: {e}");
+            log::error!("Fetching claim total for {account}: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }
