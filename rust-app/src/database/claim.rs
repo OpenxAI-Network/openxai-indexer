@@ -33,7 +33,6 @@ impl DatabaseClaim {
             .await
     }
 
-    #[allow(dead_code)]
     pub async fn get_all_by_account(
         database: &Database,
         account: &str,

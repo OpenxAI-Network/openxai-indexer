@@ -10,6 +10,18 @@ use crate::{
 #[get("/{account}/claim")]
 async fn get_claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
+    match DatabaseClaim::get_all_by_account(&database, &account).await {
+        Ok(claim) => HttpResponse::Ok().json(claim),
+        Err(e) => {
+            log::error!("Fetching claim for {account}: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[get("/{account}/claim_total")]
+async fn get_claim_total(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
+    let account = path.into_inner();
     match DatabaseClaim::get_total_amount_by_account(&database, &account).await {
         Ok(total) => HttpResponse::Ok().json(
             total
