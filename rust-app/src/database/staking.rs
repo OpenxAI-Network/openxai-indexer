@@ -1,10 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::{Error, FromRow, query, query_as, query_scalar};
 
-use crate::{
-    database::{Database, DatabaseConnection, participated::DatabaseParticipated},
-    utils::time::get_time_i64,
-};
+use crate::database::{Database, DatabaseConnection};
 
 pub async fn create_table(connection: &DatabaseConnection) {
     sqlx::raw_sql(

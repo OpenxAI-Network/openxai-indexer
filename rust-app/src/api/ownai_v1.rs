@@ -241,7 +241,7 @@ async fn post_expires(
 
     let one_month = 30 * 24 * 60 * 60; // 1 month in seconds
     if let Some(e) = server
-        .update_expires(&database, data.months * one_month)
+        .update_expires(&database, server.expires + data.months * one_month)
         .await
     {
         log::error!(
