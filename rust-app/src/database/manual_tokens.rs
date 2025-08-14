@@ -25,17 +25,16 @@ pub struct DatabaseManualTokens {
 impl DatabaseManualTokens {
     #[allow(dead_code)]
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
-        query_as("SELECT id, account, amount, description, release_after, approval_signature, released FROM manual_tokens")
+        query_as("SELECT account, amount, description, release_after, approval_signature, released FROM manual_tokens")
             .fetch_all(&database.connection)
             .await
     }
 
-    #[allow(dead_code)]
     pub async fn get_all_by_account(
         database: &Database,
         account: &str,
     ) -> Result<Vec<Self>, Error> {
-        query_as("SELECT id, account, amount, description, release_after, approval_signature, released FROM manual_tokens WHERE account = $1")
+        query_as("SELECT account, amount, description, release_after, approval_signature, released FROM manual_tokens WHERE account = $1")
             .bind(account)
             .fetch_all(&database.connection)
             .await
