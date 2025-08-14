@@ -22,6 +22,9 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(deployment_signature::get_app_version_total);
     cfg.service(deployment_signature::post_upload);
 
+    cfg.service(manual_tokens::get_manual_tokens);
+    cfg.service(manual_tokens::post_upload);
+
     cfg.service(ownai_v1::get_server);
     cfg.service(ownai_v1::get_owner_servers);
     cfg.service(ownai_v1::get_controller_servers);
