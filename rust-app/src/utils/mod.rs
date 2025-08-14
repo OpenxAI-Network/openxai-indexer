@@ -1,6 +1,7 @@
 pub mod controller;
 pub mod decimals;
 pub mod env;
+pub mod manual_tokens;
 pub mod signature_validator;
 pub mod staking;
 pub mod time;

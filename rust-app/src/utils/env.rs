@@ -28,6 +28,10 @@ pub fn tokenminterkey() -> String {
     env_var("TOKENMINTERKEY").expect("No TOKENMINTERKEY provided.")
 }
 
+pub fn manualtokensigner() -> String {
+    env_var("MANUALTOKENSIGNER").expect("No MANUALTOKENSIGNER provided.")
+}
+
 pub fn database() -> String {
     env_var("DATABASE").unwrap_or("postgres:openxai-indexer?host=/run/postgresql".to_string())
 }

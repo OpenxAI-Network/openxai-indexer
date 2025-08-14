@@ -64,6 +64,15 @@ in
         '';
       };
 
+      manualtokensigner = lib.mkOption {
+        type = lib.types.str;
+        default = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        example = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        description = ''
+          Address that signs manual token claims.
+        '';
+      };
+
       database = lib.mkOption {
         type = lib.types.str;
         default = "postgres:openxai-indexer?host=/run/postgresql";
@@ -217,6 +226,7 @@ in
         CLAIMERKEY = cfg.claimerkey;
         TOKENOWNERKEY = cfg.tokenownerkey;
         TOKENMINTERKEY = cfg.tokenminterkey;
+        MANUALTOKENSIGNER = cfg.manualtokensigner;
         DATABASE = cfg.database;
         SUBDOMAINDISTRIBUTOR = cfg.subdomaindistributor;
         HTTPRPC = cfg.rpc.http;

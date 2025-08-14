@@ -5,6 +5,7 @@ use crate::utils::env::database;
 pub mod claim;
 pub mod credits;
 pub mod deployment_signature;
+pub mod manual_tokens;
 pub mod participated;
 pub mod staking;
 pub mod tokenized_server;
@@ -35,6 +36,7 @@ pub async fn create_connection() -> DatabaseConnection {
     claim::create_table(&connection).await;
     credits::create_table(&connection).await;
     deployment_signature::create_table(&connection).await;
+    manual_tokens::create_table(&connection).await;
     participated::create_table(&connection).await;
     staking::create_table(&connection).await;
     tokenized_server::create_table(&connection).await;

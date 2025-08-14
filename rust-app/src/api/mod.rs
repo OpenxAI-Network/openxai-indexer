@@ -3,6 +3,7 @@ use actix_web::web::ServiceConfig;
 pub mod claim;
 pub mod credits;
 pub mod deployment_signature;
+pub mod manual_tokens;
 pub mod ownai_v1;
 pub mod participated;
 pub mod staking;

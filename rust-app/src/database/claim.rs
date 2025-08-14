@@ -3,7 +3,8 @@ use sqlx::{Error, FromRow, query, query_as, query_scalar};
 
 use crate::{
     database::{
-        Database, DatabaseConnection, participated::DatabaseParticipated, staking::DatabaseStaking,
+        Database, DatabaseConnection, manual_tokens::DatabaseManualTokens,
+        participated::DatabaseParticipated, staking::DatabaseStaking,
     },
     utils::time::get_time_i64,
 };
@@ -118,6 +119,20 @@ impl From<&DatabaseStaking> for DatabaseClaim {
                 token_id = val.token_id
             ),
             date: val.date,
+        }
+    }
+}
+
+impl From<&DatabaseManualTokens> for DatabaseClaim {
+    fn from(val: &DatabaseManualTokens) -> Self {
+        DatabaseClaim {
+            account: val.account.clone(),
+            amount: val.amount,
+            description: format!(
+                "Manual token reward for {description}",
+                description = val.description
+            ),
+            date: get_time_i64(),
         }
     }
 }
