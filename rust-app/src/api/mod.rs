@@ -10,6 +10,7 @@ pub mod tokens_claimed;
 
 pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(claim::get_claim);
+    cfg.service(claim::get_claim_total);
     cfg.service(claim::post_claim);
 
     cfg.service(credits::get_credits);
