@@ -37,6 +37,18 @@ impl DatabaseDeploymentSignature {
             .await
     }
 
+    pub async fn get_latest_by_app(
+        database: &Database,
+        app: &str,
+        max: i64,
+    ) -> Result<Vec<Self>, Error> {
+        query_as("SELECT xnode, app, version, deployer, signature, date FROM deployment_signature WHERE app = $1 ORDER BY date DESC LIMIT $2")
+            .bind(app)
+            .bind(max)
+            .fetch_all(&database.connection)
+            .await
+    }
+
     pub async fn get_count_by_app(database: &Database, app: &str) -> Result<i64, Error> {
         query_scalar("SELECT COUNT(*) FROM deployment_signature WHERE app = $1")
             .bind(app)

@@ -10,15 +10,10 @@ use crate::{
 #[get("/deployment_signature/latest/{app}")]
 async fn get_latest(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let app = path.into_inner();
-    match DatabaseDeploymentSignature::get_all_by_app(&database, &app).await {
-        Ok(deployment) => HttpResponse::Ok().json(
-            deployment
-                .into_iter()
-                .take(10)
-                .collect::<Vec<DatabaseDeploymentSignature>>(),
-        ),
+    match DatabaseDeploymentSignature::get_latest_by_app(&database, &app, 10).await {
+        Ok(deployments) => HttpResponse::Ok().json(deployments),
         Err(e) => {
-            log::error!("Fetching deployment signature for {app}: {e}");
+            log::error!("Fetching latest deployment signature for {app}: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }
