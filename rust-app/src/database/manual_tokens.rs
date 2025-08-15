@@ -41,7 +41,7 @@ impl DatabaseManualTokens {
     }
 
     pub async fn get_all_releasable_not_released(database: &Database) -> Result<Vec<Self>, Error> {
-        query_as("SELECT account, amount, description, release_after, approval_signature, released FROM manual_tokens WHERE release_after > EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) AND released = FALSE")
+        query_as("SELECT account, amount, description, release_after, approval_signature, released FROM manual_tokens WHERE release_after <= EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) AND released = FALSE")
             .fetch_all(&database.connection)
             .await
     }
@@ -69,7 +69,7 @@ impl DatabaseManualTokens {
 
     pub async fn release(&mut self, database: &Database) -> Option<Error> {
         query(
-            "UPDATE manual_tokens SET released = TRUE WHERE account = $1 AND amount = $2 AND description = $3 AND release_after = $4;",
+            "UPDATE manual_tokens SET released = $1 WHERE account = $2 AND amount = $3 AND description = $4 AND release_after = $5;",
         )
         .bind(true)
         .bind(&self.account)

@@ -30,6 +30,7 @@ impl DatabaseDeploymentSignature {
             .await
     }
 
+    #[allow(dead_code)]
     pub async fn get_all_by_app(database: &Database, app: &str) -> Result<Vec<Self>, Error> {
         query_as("SELECT xnode, app, version, deployer, signature, date FROM deployment_signature WHERE app = $1")
             .bind(app)
