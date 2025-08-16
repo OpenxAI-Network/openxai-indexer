@@ -22,7 +22,11 @@ sol! {
 }
 
 pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
-    let ownaiv1 = OpenxAITokenizedServerV1::new(ownaiv1(), provider);
+    let ownaiv1_addr = ownaiv1().unwrap_or_else(|e| {
+        log::error!("Failed to get ownaiv1 address: {}", e);
+        panic!("Critical configuration error: ownaiv1 address required");
+    });
+    let ownaiv1 = OpenxAITokenizedServerV1::new(ownaiv1_addr, provider);
     let transfer_stream = ownaiv1
         .Transfer_filter()
         .subscribe()

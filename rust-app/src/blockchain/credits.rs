@@ -17,8 +17,16 @@ sol! {
 }
 
 pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
-    let usdc = USDC::new(usdc(), provider);
-    let deposit = deposit();
+    let usdc_addr = usdc().unwrap_or_else(|e| {
+        log::error!("Failed to get USDC address: {}", e);
+        panic!("Critical configuration error: USDC address required");
+    });
+    let deposit_addr = deposit().unwrap_or_else(|e| {
+        log::error!("Failed to get DEPOSIT address: {}", e);
+        panic!("Critical configuration error: DEPOSIT address required");
+    });
+    let usdc = USDC::new(usdc_addr, provider);
+    let deposit = deposit_addr;
     let transfer_stream = usdc
         .Transfer_filter()
         .topic2(deposit)

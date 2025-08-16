@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     database::{Database, manual_tokens::DatabaseManualTokens},
-    utils::{env::manualtokensigner, signature_validator::validate_signature},
+    utils::{env::secure_manualtokensigner, signature_validator::validate_signature},
 };
 
 #[get("/{account}/manual_tokens")]
@@ -40,9 +40,16 @@ async fn post_upload(
     provider: web::Data<DynProvider>,
     data: web::Json<ManualTokensSignature>,
 ) -> impl Responder {
+    let secret_signer_key = match secure_manualtokensigner() {
+        Ok(key) => key,
+        Err(_) => {
+            log::error!("Failed to retrieve manual token signer configuration");
+            return HttpResponse::InternalServerError().json("Configuration error");
+        }
+    };
     if !validate_signature(
         provider.get_ref(),
-        &manualtokensigner(),
+        &secret_signer_key,
         &data.manual_tokens,
         &data.signature,
     )

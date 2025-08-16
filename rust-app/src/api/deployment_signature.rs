@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     database::{Database, deployment_signature::DatabaseDeploymentSignature},
-    utils::{signature_validator::validate_signature, time::get_time_i64},
+    utils::{signature_validator::validate_signature_str, time::get_time_i64},
 };
 
 #[get("/deployment_signature/latest/{app}")]
@@ -68,7 +68,7 @@ async fn post_upload(
                     version = data.version,
                     app = data.app
                 );
-                if !validate_signature(provider.get_ref(), deployer, &message, signature).await {
+                if !validate_signature_str(provider.get_ref(), deployer, &message, signature).await {
                     return HttpResponse::Unauthorized().finish();
                 }
             }

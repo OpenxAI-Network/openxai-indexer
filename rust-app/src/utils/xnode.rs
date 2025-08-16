@@ -30,16 +30,21 @@ pub fn str_to_xnode_user(address: &str) -> String {
     address.replace("0x", "eth:").to_ascii_lowercase()
 }
 
-pub fn get_v1_deployer(name: String) -> HyperstackDeployer {
-    HyperstackDeployer::new(
-        hyperstackapikey(),
+pub fn get_v1_deployer(name: String) -> Result<HyperstackDeployer, Box<dyn std::error::Error>> {
+    let api_key = hyperstackapikey().map_err(|e| {
+        log::error!("Failed to retrieve Hyperstack API key: {}", e);
+        e
+    })?;
+    
+    Ok(HyperstackDeployer::new(
+        api_key,
         HyperstackHardware::VirtualMachine {
             name,
             environment_name: "default-NORWAY-1".to_string(),
             flavor_name: "n3-RTX-A4000x1".to_string(),
             key_name: "NixOS".to_string(),
         },
-    )
+    ))
 }
 
 pub fn get_deploy_input(domain: String, xnode_owner: String, controller: String) -> DeployInput {
@@ -72,12 +77,17 @@ pub async fn available_v1() -> bool {
     let target_region = "NORWAY-1".to_string();
     let target_model = "RTX-A4000".to_string();
 
+    let api_key = match hyperstackapikey() {
+        Ok(key) => key,
+        Err(e) => {
+            log::error!("Failed to retrieve Hyperstack API key: {}", e);
+            return false;
+        }
+    };
+
     let response = match client
         .get("https://infrahub-api.nexgencloud.com/v1/core/stocks")
-        .header(
-            "api_key",
-            "7eeb6090-7fe6-48c5-ab6e-7d7d88b529fd".to_string(),
-        ) //hyperstackapikey())
+        .header("api_key", api_key)
         .send()
         .await
         .and_then(|response| response.error_for_status())
@@ -150,11 +160,25 @@ pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer
         collection = server.collection,
     );
     let domain = format!("{subdomain}.openxai.network");
-    let deployer = get_v1_deployer(subdomain.replace(".", "-"));
+    let deployer = match get_v1_deployer(subdomain.replace(".", "-")) {
+        Ok(deployer) => deployer,
+        Err(e) => {
+            log::error!("Failed to create deployer: {}", e);
+            return;
+        }
+    };
+    let owner = match get_tokenized_server_owner() {
+        Ok(owner) => owner,
+        Err(e) => {
+            log::error!("Failed to get tokenized server owner: {}", e);
+            return;
+        }
+    };
+    
     let deployment = match deployer
         .deploy(get_deploy_input(
             domain.clone(),
-            address_to_xnode_user(get_tokenized_server_owner().address()),
+            address_to_xnode_user(owner.address()),
             server.controller.clone(),
         ))
         .await
@@ -230,12 +254,18 @@ pub async fn undeploy(database: &Database, server: &mut DatabaseTokenizedServer)
 
     match deployment {
         TokenizedServerDeployment::Hyperstack { id } => {
-            let deployer = get_v1_deployer(format!(
+            let deployer = match get_v1_deployer(format!(
                 "{collection}-{chain}-{token_id}",
                 collection = server.collection,
                 chain = server.chain,
                 token_id = server.token_id
-            ));
+            )) {
+                Ok(deployer) => deployer,
+                Err(e) => {
+                    log::error!("Failed to create deployer for undeploy: {}", e);
+                    return;
+                }
+            };
             if let Some(e) = deployer.undeploy(HyperstackOutput { id }).await {
                 log::error!(
                     "UNDEPLOYMENT OF {collection}@{chain}@{token_id} FAILED: {e:?}",
