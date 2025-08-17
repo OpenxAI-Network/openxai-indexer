@@ -79,7 +79,10 @@ services.xnode-auth.domains.\"{app}\".accessList.\"{controller}\" = {{ }};\
 }
 
 async fn get_session(xnode_id: &str) -> Result<Session, Error> {
-    let signer = get_tokenized_server_owner();
+    let signer = get_tokenized_server_owner().map_err(|e| {
+        log::error!("Failed to get tokenized server owner: {}", e);
+        Error::AlloySignerError(alloy::signers::Error::other(format!("Configuration error: {}", e)))
+    })?;
 
     let user = address_to_xnode_user(signer.address());
     let domain = xnode_id.to_string();

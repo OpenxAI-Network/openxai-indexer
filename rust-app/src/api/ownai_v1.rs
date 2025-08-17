@@ -16,7 +16,7 @@ use crate::{
     },
     utils::{
         env::ownaiv1price,
-        signature_validator::validate_signature,
+        signature_validator::validate_signature_str,
         time::get_time_i64,
         wallet::mint_tokenized_server,
         xnode::{available_v1, deploy_v1, str_to_xnode_user, update_controller},
@@ -153,7 +153,7 @@ async fn post_controller(
         "Update controller for {collection}@{chain}@{token_id} to {controller}",
         controller = data.controller
     );
-    if !validate_signature(
+    if !validate_signature_str(
         provider.get_ref(),
         &server.owner,
         &message,
@@ -213,7 +213,7 @@ async fn post_expires(
         "Extend expiry of {collection}@{chain}@{token_id} by {months} months",
         months = data.months
     );
-    if !validate_signature(
+    if !validate_signature_str(
         provider.get_ref(),
         &data.payer_address,
         &message,
@@ -313,7 +313,7 @@ async fn post_mint(
     let collection = Collection::OwnAIv1.to_string();
 
     let message = format!("Mint new {collection}@{chain} to {to}", to = data.to);
-    if !validate_signature(
+    if !validate_signature_str(
         provider.get_ref(),
         &data.payer_address,
         &message,
@@ -351,7 +351,12 @@ async fn post_mint(
         log::error!("COULD NOT INSERT TOKENIZED SERVER {server:?}: {e}");
         return HttpResponse::InternalServerError().finish();
     }
-    mint_tokenized_server(provider.get_ref(), to, token_id).await;
+    
+    if let Some(e) = mint_tokenized_server(provider.get_ref(), to, token_id).await {
+        log::error!("Failed to mint tokenized server: {}", e);
+        return HttpResponse::InternalServerError().json("Failed to mint token");
+    }
+    
     deploy_v1(&database, &mut server).await;
 
     HttpResponse::Ok().json(token_id)

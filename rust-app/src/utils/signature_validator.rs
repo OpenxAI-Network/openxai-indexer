@@ -6,6 +6,7 @@ use alloy::{
     signers::Signature,
     sol,
 };
+use secrecy::{ExposeSecret, SecretString};
 
 sol! {
     #[sol(rpc)]
@@ -15,6 +16,24 @@ sol! {
 }
 
 pub async fn validate_signature<P: Provider>(
+    provider: &P,
+    account: &SecretString,
+    message: &str,
+    signature: &str,
+) -> bool {
+    validate_signature_internal(provider, account.expose_secret(), message, signature).await
+}
+
+pub async fn validate_signature_str<P: Provider>(
+    provider: &P,
+    account: &str,
+    message: &str,
+    signature: &str,
+) -> bool {
+    validate_signature_internal(provider, account, message, signature).await
+}
+
+async fn validate_signature_internal<P: Provider>(
     provider: &P,
     account: &str,
     message: &str,

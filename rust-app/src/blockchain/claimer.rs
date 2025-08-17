@@ -19,7 +19,11 @@ sol! {
 }
 
 pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
-    let claimer = OpenxAIClaimer::new(claimer(), provider);
+    let claimer_addr = claimer().unwrap_or_else(|e| {
+        log::error!("Failed to get claimer address: {}", e);
+        panic!("Critical configuration error: claimer address required");
+    });
+    let claimer = OpenxAIClaimer::new(claimer_addr, provider);
     let tokens_claimed_stream = claimer
         .TokensClaimed_filter()
         .subscribe()
