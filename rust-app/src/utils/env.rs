@@ -1,6 +1,7 @@
 use alloy::primitives::Address;
 use std::fmt;
 use secrecy::{SecretString, ExposeSecret};
+use super::secure_memory::{SecurePrivateKey, SecurityError};
 
 #[derive(Debug)]
 pub enum EnvError {
@@ -140,32 +141,59 @@ pub fn port() -> String {
 // Legacy functions removed - use secure_* versions instead
 
 // Secure versions using SecretString for private keys with full validation
-pub fn secure_claimerkey() -> Result<SecretString, EnvError> {
+
+
+// Secure memory-protected versions
+pub fn secure_claimerkey_protected() -> Result<SecurePrivateKey, EnvError> {
     let secret = secure_secret_env_var("CLAIMERKEY")?;
     validate_private_key_format(&secret)?;
     validate_private_key_entropy(&secret)?;
-    Ok(secret)
+    SecurePrivateKey::new(&secret).map_err(|e| {
+        log::error!("Failed to create secure private key: {}", e);
+        match e {
+            SecurityError::InsufficientEntropy => EnvError::InsufficientEntropy,
+            _ => EnvError::InvalidFormat,
+        }
+    })
 }
 
-pub fn secure_tokenownerkey() -> Result<SecretString, EnvError> {
+pub fn secure_tokenownerkey_protected() -> Result<SecurePrivateKey, EnvError> {
     let secret = secure_secret_env_var("TOKENOWNERKEY")?;
     validate_private_key_format(&secret)?;
     validate_private_key_entropy(&secret)?;
-    Ok(secret)
+    SecurePrivateKey::new(&secret).map_err(|e| {
+        log::error!("Failed to create secure private key: {}", e);
+        match e {
+            SecurityError::InsufficientEntropy => EnvError::InsufficientEntropy,
+            _ => EnvError::InvalidFormat,
+        }
+    })
 }
 
-pub fn secure_tokenminterkey() -> Result<SecretString, EnvError> {
+pub fn secure_tokenminterkey_protected() -> Result<SecurePrivateKey, EnvError> {
     let secret = secure_secret_env_var("TOKENMINTERKEY")?;
     validate_private_key_format(&secret)?;
     validate_private_key_entropy(&secret)?;
-    Ok(secret)
+    SecurePrivateKey::new(&secret).map_err(|e| {
+        log::error!("Failed to create secure private key: {}", e);
+        match e {
+            SecurityError::InsufficientEntropy => EnvError::InsufficientEntropy,
+            _ => EnvError::InvalidFormat,
+        }
+    })
 }
 
-pub fn secure_manualtokensigner() -> Result<SecretString, EnvError> {
+pub fn secure_manualtokensigner_protected() -> Result<SecurePrivateKey, EnvError> {
     let secret = secure_secret_env_var("MANUALTOKENSIGNER")?;
     validate_private_key_format(&secret)?;
     validate_private_key_entropy(&secret)?;
-    Ok(secret)
+    SecurePrivateKey::new(&secret).map_err(|e| {
+        log::error!("Failed to create secure private key: {}", e);
+        match e {
+            SecurityError::InsufficientEntropy => EnvError::InsufficientEntropy,
+            _ => EnvError::InvalidFormat,
+        }
+    })
 }
 
 

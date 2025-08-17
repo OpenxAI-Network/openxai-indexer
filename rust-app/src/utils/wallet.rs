@@ -7,24 +7,31 @@ use alloy::{
 
 use crate::{
     blockchain::{claimer::Claim, ownai_v1::OpenxAITokenizedServerV1},
-    utils::env::{chainid, claimer, ownaiv1, secure_claimerkey, secure_tokenownerkey, secure_tokenminterkey},
+    utils::env::{chainid, claimer, ownaiv1, secure_claimerkey_protected, secure_tokenownerkey_protected, secure_tokenminterkey_protected},
 };
 
-use secrecy::ExposeSecret;
+
 
 pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, Box<dyn std::error::Error>> {
-    let secret_key = secure_claimerkey().map_err(|e| {
+    let secure_key = secure_claimerkey_protected().map_err(|e| {
         log::error!("Failed to retrieve claimer key: {}", e);
         Box::new(e) as Box<dyn std::error::Error>
     })?;
     
-    let signer: PrivateKeySigner = secret_key
-        .expose_secret()
-        .parse()
-        .map_err(|e| {
-            log::error!("Failed to parse claimer key");
+    let signer: PrivateKeySigner = match secure_key.with_key(|key_bytes| {
+        let key_str = std::str::from_utf8(key_bytes).map_err(|e| {
+            log::error!("Invalid UTF-8 in private key: {}", e);
             Box::new(e) as Box<dyn std::error::Error>
         })?;
+        
+        key_str.parse().map_err(|e| {
+            log::error!("Failed to parse claimer key");
+            Box::new(e) as Box<dyn std::error::Error>
+        })
+     }) {
+        Ok(result) => result?,
+        Err(e) => return Err(Box::new(e) as Box<dyn std::error::Error>),
+    };
 
     let claimer_addr = claimer().map_err(|e| {
         log::error!("Failed to get claimer address: {}", e);
@@ -51,15 +58,25 @@ pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, Box<dyn s
 }
 
 pub fn get_tokenized_server_owner() -> Result<PrivateKeySigner, Box<dyn std::error::Error>> {
-    let secret_key = secure_tokenownerkey().map_err(|e| {
+    let secure_key = secure_tokenownerkey_protected().map_err(|e| {
         log::error!("Failed to retrieve token owner key: {}", e);
         Box::new(e) as Box<dyn std::error::Error>
     })?;
     
-    secret_key.expose_secret().parse().map_err(|e| {
-        log::error!("Failed to parse token owner key");
-        Box::new(e) as Box<dyn std::error::Error>
-    })
+    match secure_key.with_key(|key_bytes| {
+        let key_str = std::str::from_utf8(key_bytes).map_err(|e| {
+            log::error!("Invalid UTF-8 in private key: {}", e);
+            Box::new(e) as Box<dyn std::error::Error>
+        })?;
+        
+        key_str.parse().map_err(|e| {
+            log::error!("Failed to parse token owner key");
+            Box::new(e) as Box<dyn std::error::Error>
+        })
+    }) {
+        Ok(result) => result,
+        Err(e) => Err(Box::new(e) as Box<dyn std::error::Error>),
+    }
 }
 
 pub async fn mint_tokenized_server<P: Provider>(
@@ -67,7 +84,7 @@ pub async fn mint_tokenized_server<P: Provider>(
     to: Address,
     token_id: i64,
 ) -> Option<Box<dyn std::error::Error>> {
-    let secret_key = match secure_tokenminterkey() {
+    let secure_key = match secure_tokenminterkey_protected() {
         Ok(key) => key,
         Err(e) => {
             log::error!("Failed to retrieve token minter key: {}", e);
@@ -75,11 +92,26 @@ pub async fn mint_tokenized_server<P: Provider>(
         }
     };
     
-    let signer: PrivateKeySigner = match secret_key.expose_secret().parse() {
-        Ok(signer) => signer,
+    let signer: PrivateKeySigner = match secure_key.with_key(|key_bytes| {
+        let key_str = std::str::from_utf8(key_bytes).map_err(|e| {
+            format!("Invalid UTF-8 in private key: {}", e)
+        })?;
+        
+        key_str.parse().map_err(|e| {
+            format!("Failed to parse private key: {}", e)
+        })
+    }) {
+        Ok(result) => match result {
+            Ok(signer) => signer,
+            Err(e) => {
+                log::error!("Failed to parse private key: {}", e);
+                return Some(e.into());
+            }
+        },
         Err(e) => {
-            log::error!("Failed to parse token minter key");
-            return Some(e.into());
+            let error_msg = format!("Security error: {}", e);
+            log::error!("{}", error_msg);
+            return Some(error_msg.into());
         }
     };
     let provider = ProviderBuilder::new()
