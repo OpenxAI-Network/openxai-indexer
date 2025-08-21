@@ -6,6 +6,7 @@ pub mod deployment_signature;
 pub mod manual_tokens;
 pub mod ownai_v1;
 pub mod participated;
+pub mod promo_code;
 pub mod staking;
 pub mod tokens_claimed;
 
@@ -34,6 +35,9 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(ownai_v1::get_staking);
 
     cfg.service(participated::get_participated);
+
+    cfg.service(promo_code::post_redeem);
+    cfg.service(promo_code::post_add);
 
     cfg.service(staking::get_staking);
     cfg.service(staking::get_total_staking);
