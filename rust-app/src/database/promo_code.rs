@@ -45,7 +45,7 @@ impl DatabasePromoCode {
         database: &Database,
         code: &str,
     ) -> Result<Option<Self>, Error> {
-        query_as("SELECT code, credits, description, redeemed_by FROM promo_code WHERE code = $1 AND redeemed_by = NULL")
+        query_as("SELECT code, credits, description, redeemed_by FROM promo_code WHERE code = $1 AND redeemed_by IS NULL")
         .bind(code)
             .fetch_optional(&database.connection)
             .await
@@ -69,7 +69,7 @@ impl DatabasePromoCode {
     }
 
     pub async fn redeem(&mut self, database: &Database, redeemed_by: &str) -> Option<Error> {
-        query("UPDATE promo_code SET redeemed_by = $1 WHERE code = $2 AND redeemed_by = NULL;")
+        query("UPDATE promo_code SET redeemed_by = $1 WHERE code = $2 AND redeemed_by IS NULL;")
             .bind(redeemed_by)
             .bind(&self.code)
             .execute(&database.connection)
