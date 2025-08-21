@@ -28,7 +28,7 @@ async fn post_redeem(
             return HttpResponse::BadRequest().finish();
         }
     };
-    if let Some(e) = code.redeem(&database, &data.account).await {
+    if let Err(e) = code.redeem(&database, &data.account).await {
         log::error!(
             "COULD NOT REDEEM PROMO CODE {code:?} FOR {account}: {e}",
             account = data.account
@@ -43,7 +43,7 @@ async fn post_redeem(
             return HttpResponse::InternalServerError().finish();
         }
     };
-    if let Some(e) = credits.insert(&database).await {
+    if let Err(e) = credits.insert(&database).await {
         log::error!("COULD NOT INSERT CREDITS {credits:?}: {e}");
         return HttpResponse::InternalServerError().finish();
     }
@@ -93,7 +93,7 @@ async fn post_add(
             description: code.description.clone(),
             redeemed_by: None,
         };
-        if let Some(e) = code.insert(&database).await {
+        if let Err(e) = code.insert(&database).await {
             log::error!("COULD NOT INSERT PROMO CODE {code:?}: {e}");
         }
     }

@@ -66,7 +66,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                             return;
                         }
                     };
-                    if let Some(e) = tokenized_server.update_owner(&database, to.clone()).await
+                    if let Err(e) = tokenized_server.update_owner(&database, to.clone()).await
                     {
                         log::error!("COULD NOT UPDATE TOKENIZED SERVER OWNER {collection}@{chain}@{token_id} to {to}: {e}", collection = tokenized_server.collection, token_id = tokenized_server.token_id);
                         return;

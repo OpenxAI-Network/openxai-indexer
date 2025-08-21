@@ -69,7 +69,7 @@ impl DatabaseDeploymentSignature {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             xnode,
             app,
@@ -87,6 +87,8 @@ impl DatabaseDeploymentSignature {
         .bind(signature)
         .bind(date)
         .execute(&database.connection)
-        .await.err()
+        .await?;
+
+        Ok(())
     }
 }

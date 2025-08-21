@@ -224,7 +224,7 @@ async fn post_expires(
         return HttpResponse::Unauthorized().finish();
     }
 
-    if let Some(_e) = (DatabaseCredits {
+    if let Err(_e) = (DatabaseCredits {
         account: data.payer_address.clone(),
         credits: -ownaiv1price() * data.months,
         description: format!(
@@ -240,7 +240,7 @@ async fn post_expires(
     }
 
     let one_month = 30 * 24 * 60 * 60; // 1 month in seconds
-    if let Some(e) = server
+    if let Err(e) = server
         .update_expires(&database, server.expires + data.months * one_month)
         .await
     {
@@ -324,7 +324,7 @@ async fn post_mint(
         return HttpResponse::Unauthorized().finish();
     }
 
-    if let Some(_e) = (DatabaseCredits {
+    if let Err(_e) = (DatabaseCredits {
         account: data.payer_address.clone(),
         credits: -ownaiv1price(),
         description: format!("Mint of {collection}@{chain} to {to}", to = data.to),
@@ -347,7 +347,7 @@ async fn post_mint(
         deployment: None,
         expires: get_time_i64() + one_month,
     };
-    if let Some(e) = server.insert(&database).await {
+    if let Err(e) = server.insert(&database).await {
         log::error!("COULD NOT INSERT TOKENIZED SERVER {server:?}: {e}");
         return HttpResponse::InternalServerError().finish();
     }

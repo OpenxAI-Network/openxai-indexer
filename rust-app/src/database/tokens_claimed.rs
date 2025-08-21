@@ -39,7 +39,7 @@ impl DatabaseTokensClaimed {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             account,
             total,
@@ -55,6 +55,8 @@ impl DatabaseTokensClaimed {
         .bind(transaction_hash)
         .bind(log_index)
         .execute(&database.connection)
-        .await.err()
+        .await?;
+
+        Ok(())
     }
 }

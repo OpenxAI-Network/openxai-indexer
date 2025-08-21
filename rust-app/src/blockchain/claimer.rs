@@ -73,7 +73,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                 let tokens_claimed = DatabaseTokensClaimed {
                     account, total, released, transaction_hash, log_index
                 };
-                if let Some(e) = tokens_claimed.insert(&database).await
+                if let Err(e) = tokens_claimed.insert(&database).await
                 {
                     log::error!("COULD NOT INSERT TOKENS CLAIMED {tokens_claimed:?} INTO DATABASE: {e}");
                 }

@@ -87,7 +87,7 @@ impl DatabaseCredits {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             account,
             credits,
@@ -101,8 +101,9 @@ impl DatabaseCredits {
             .bind(description)
             .bind(date)
             .execute(&database.connection)
-            .await
-            .err()
+            .await?;
+
+        Ok(())
     }
 }
 

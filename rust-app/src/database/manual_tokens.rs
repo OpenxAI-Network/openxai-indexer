@@ -46,7 +46,7 @@ impl DatabaseManualTokens {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             account,
             amount,
@@ -64,10 +64,12 @@ impl DatabaseManualTokens {
         .bind(approval_signature)
         .bind(released)
         .execute(&database.connection)
-        .await.err()
+        .await?;
+
+        Ok(())
     }
 
-    pub async fn release(&mut self, database: &Database) -> Option<Error> {
+    pub async fn release(&mut self, database: &Database) -> Result<(), Error> {
         query(
             "UPDATE manual_tokens SET released = $1 WHERE account = $2 AND amount = $3 AND description = $4 AND release_after = $5;",
         )
@@ -77,10 +79,9 @@ impl DatabaseManualTokens {
         .bind(&self.description)
         .bind(self.release_after)
         .execute(&database.connection)
-        .await
-        .err()?;
+        .await?;
 
         self.released = true;
-        None
+        Ok(())
     }
 }

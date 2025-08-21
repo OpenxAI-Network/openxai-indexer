@@ -119,7 +119,7 @@ impl DatabaseTokenizedServer {
         .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             collection,
             chain,
@@ -139,28 +139,29 @@ impl DatabaseTokenizedServer {
         .bind(deployment)
         .bind(expires)
         .execute(&database.connection)
-        .await.err()
+        .await?;
+
+        Ok(())
     }
 
-    pub async fn update_owner(&mut self, database: &Database, owner: String) -> Option<Error> {
+    pub async fn update_owner(&mut self, database: &Database, owner: String) -> Result<(), Error> {
         query("UPDATE tokenized_server SET owner = $1 WHERE collection = $2 AND chain = $3 AND token_id = $4;")
             .bind(&owner)
             .bind(&self.collection)
             .bind(&self.chain)
             .bind(&self.token_id)
             .execute(&database.connection)
-            .await
-            .err()?;
+            .await?;
 
         self.owner = owner;
-        None
+        Ok(())
     }
 
     pub async fn update_controller(
         &mut self,
         database: &Database,
         controller: String,
-    ) -> Option<Error> {
+    ) -> Result<(), Error> {
         query(
             "UPDATE tokenized_server SET controller = $1 WHERE collection = $2 AND chain = $3 AND token_id = $4;",
         )
@@ -169,32 +170,30 @@ impl DatabaseTokenizedServer {
         .bind(&self.chain)
         .bind(&self.token_id)
         .execute(&database.connection)
-        .await
-        .err()?;
+        .await?;
 
         self.controller = controller;
-        None
+        Ok(())
     }
 
-    pub async fn update_expires(&mut self, database: &Database, expires: i64) -> Option<Error> {
+    pub async fn update_expires(&mut self, database: &Database, expires: i64) -> Result<(), Error> {
         query("UPDATE tokenized_server SET expires = $1 WHERE collection = $2 AND chain = $3 AND token_id = $4;")
             .bind(expires)
             .bind(&self.collection)
             .bind(&self.chain)
             .bind(&self.token_id)
             .execute(&database.connection)
-            .await
-            .err()?;
+            .await?;
 
         self.expires = expires;
-        None
+        Ok(())
     }
 
     pub async fn deploy(
         &mut self,
         database: &Database,
         deployment: Json<TokenizedServerDeployment>,
-    ) -> Option<Error> {
+    ) -> Result<(), Error> {
         query(
             "UPDATE tokenized_server SET deployment = $1 WHERE collection = $2 AND chain = $3 AND token_id = $4;",
         )
@@ -203,23 +202,21 @@ impl DatabaseTokenizedServer {
         .bind(&self.chain)
         .bind(&self.token_id)
         .execute(&database.connection)
-        .await
-        .err()?;
+        .await?;
 
         self.deployment = Some(deployment);
-        None
+        Ok(())
     }
 
-    pub async fn undeploy(&mut self, database: &Database) -> Option<Error> {
+    pub async fn undeploy(&mut self, database: &Database) -> Result<(), Error> {
         query("UPDATE tokenized_server SET deployment = NULL WHERE collection = $1 AND chain = $2 AND token_id = $3;")
             .bind(&self.collection)
             .bind(&self.chain)
             .bind(&self.token_id)
             .execute(&database.connection)
-            .await
-            .err()?;
+            .await?;
 
         self.deployment = None;
-        None
+        Ok(())
     }
 }

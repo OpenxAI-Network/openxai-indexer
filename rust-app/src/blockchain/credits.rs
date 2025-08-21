@@ -75,7 +75,7 @@ pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
                     description: format!("USDC deposit on {chain}"),
                     date: get_time_i64()
                 };
-                if let Some(e) = credits.insert(&database).await
+                if let Err(e) = credits.insert(&database).await
                 {
                     log::error!("COULD NOT INSERTS CREDITS {credits:?} INTO DATABASE: {e}");
                 }

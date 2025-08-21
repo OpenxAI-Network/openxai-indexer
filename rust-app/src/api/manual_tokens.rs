@@ -67,7 +67,7 @@ async fn post_upload(
             release_after: token.release_after,
             released: false,
         };
-        if let Some(e) = token.insert(&database).await {
+        if let Err(e) = token.insert(&database).await {
             log::error!("COULD NOT INSERT MANUAL TOKEN {token:?}: {e}");
         }
     }

@@ -1,7 +1,7 @@
 use alloy::{
     primitives::{Address, Uint},
     providers::{Provider, ProviderBuilder},
-    signers::{Error, Signature, Signer, local::PrivateKeySigner},
+    signers::{Signature, Signer, local::PrivateKeySigner},
     sol_types::{SolStruct, eip712_domain},
 };
 
@@ -10,7 +10,7 @@ use crate::{
     utils::env::{chainid, claimer, claimerkey, ownaiv1, tokenminterkey, tokenownerkey},
 };
 
-pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, Error> {
+pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, alloy::signers::Error> {
     let signer: PrivateKeySigner = claimerkey()
         .parse()
         .unwrap_or_else(|e| panic!("Could not parse claimerkey: {e}"));
@@ -37,11 +37,7 @@ pub fn get_tokenized_server_owner() -> PrivateKeySigner {
         .unwrap_or_else(|e| panic!("Could not parse tokenownerkey: {e}"))
 }
 
-pub async fn mint_tokenized_server<P: Provider>(
-    provider: P,
-    to: Address,
-    token_id: i64,
-) -> Option<Error> {
+pub async fn mint_tokenized_server<P: Provider>(provider: P, to: Address, token_id: i64) {
     let signer: PrivateKeySigner = tokenminterkey()
         .parse()
         .unwrap_or_else(|e| panic!("Could not parse tokenminterkey: {e}"));
@@ -50,7 +46,7 @@ pub async fn mint_tokenized_server<P: Provider>(
         .connect_provider(provider);
 
     let ownaiv1 = OpenxAITokenizedServerV1::new(ownaiv1(), provider);
-    ownaiv1.mint(to, Uint::from(token_id)).send().await.err()?;
-
-    None
+    if let Err(e) = ownaiv1.mint(to, Uint::from(token_id)).send().await {
+        log::error!("MINT TRANSACTION OF TOKEN {token_id} TO {to} FAILED: {e}");
+    }
 }

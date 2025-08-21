@@ -51,7 +51,7 @@ impl DatabasePromoCode {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             code,
             credits,
@@ -65,18 +65,19 @@ impl DatabasePromoCode {
         .bind(description)
         .bind(redeemed_by)
         .execute(&database.connection)
-        .await.err()
+        .await?;
+
+        Ok(())
     }
 
-    pub async fn redeem(&mut self, database: &Database, redeemed_by: &str) -> Option<Error> {
+    pub async fn redeem(&mut self, database: &Database, redeemed_by: &str) -> Result<(), Error> {
         query("UPDATE promo_code SET redeemed_by = $1 WHERE code = $2 AND redeemed_by IS NULL;")
             .bind(redeemed_by)
             .bind(&self.code)
             .execute(&database.connection)
-            .await
-            .err()?;
+            .await?;
 
         self.redeemed_by = Some(redeemed_by.to_string());
-        None
+        Ok(())
     }
 }

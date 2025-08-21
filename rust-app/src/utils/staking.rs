@@ -46,12 +46,12 @@ pub async fn distribute_staking_rewards(database: Database) {
                 date: get_time_i64(),
             };
 
-            if let Some(e) = staking_reward.insert(&database).await {
+            if let Err(e) = staking_reward.insert(&database).await {
                 log::error!("COULD NOT INSERT STAKING REWARD {staking_reward:?}: {e}");
             }
 
             let claim: DatabaseClaim = (&staking_reward).into();
-            if let Some(e) = claim.insert(&database).await {
+            if let Err(e) = claim.insert(&database).await {
                 log::error!("COULD NOT INSERT CLAIM {claim:?} INTO DATABASE: {e}");
             }
         }

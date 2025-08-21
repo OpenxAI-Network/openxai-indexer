@@ -64,7 +64,7 @@ impl DatabaseStaking {
             .await
     }
 
-    pub async fn insert(&self, database: &Database) -> Option<Error> {
+    pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             account,
             amount,
@@ -82,7 +82,8 @@ impl DatabaseStaking {
             .bind(token_id)
             .bind(date)
             .execute(&database.connection)
-            .await
-            .err()
+            .await?;
+
+        Ok(())
     }
 }

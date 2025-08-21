@@ -170,7 +170,7 @@ pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer
             return;
         }
     };
-    if let Some(e) = server
+    if let Err(e) = server
         .deploy(
             database,
             Json(TokenizedServerDeployment::Hyperstack { id: deployment.id }),
@@ -248,7 +248,7 @@ pub async fn undeploy(database: &Database, server: &mut DatabaseTokenizedServer)
         }
     }
 
-    if let Some(e) = server.undeploy(database).await {
+    if let Err(e) = server.undeploy(database).await {
         log::error!(
             "DATABASE UPDATE OF UNDEPLOYMENT {deployment:?} FOR {collection}@{chain}@{token_id} FAILED: {e}",
             collection = server.collection,
@@ -311,7 +311,7 @@ pub async fn update_controller(
         );
     }
 
-    if let Some(e) = server.update_controller(database, controller.clone()).await {
+    if let Err(e) = server.update_controller(database, controller.clone()).await {
         log::error!(
             "DATABASE UPDATE OF CONTROLLER {controller} FOR {collection}@{chain}@{token_id} FAILED: {e}",
             collection = server.collection,

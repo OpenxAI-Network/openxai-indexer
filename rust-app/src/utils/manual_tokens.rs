@@ -33,13 +33,13 @@ pub async fn distribute_manual_tokens(database: Database) {
             }
         };
         for mut token in tokens {
-            if let Some(e) = token.release(&database).await {
+            if let Err(e) = token.release(&database).await {
                 log::error!("COULD NOT MARK MANUAL TOKEN {token:?} AS RELEASED INTO DATABASE: {e}");
                 return;
             }
 
             let claim: DatabaseClaim = (&token).into();
-            if let Some(e) = claim.insert(&database).await {
+            if let Err(e) = claim.insert(&database).await {
                 log::error!("COULD NOT INSERT CLAIM {claim:?} INTO DATABASE: {e}");
             }
         }

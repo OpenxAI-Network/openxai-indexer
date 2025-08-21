@@ -86,7 +86,7 @@ async fn post_upload(
         signature: data.signature.clone(),
         date: get_time_i64(),
     };
-    if let Some(e) = deployment_signature.insert(&database).await {
+    if let Err(e) = deployment_signature.insert(&database).await {
         log::error!("COULD NOT INSERT DEPLOYMENT SIGNATURE {deployment_signature:?}: {e}");
         return HttpResponse::InternalServerError().finish();
     }
