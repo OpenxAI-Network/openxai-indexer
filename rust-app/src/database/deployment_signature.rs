@@ -50,6 +50,12 @@ impl DatabaseDeploymentSignature {
             .await
     }
 
+    pub async fn get_count(database: &Database) -> Result<i64, Error> {
+        query_scalar("SELECT COUNT(*) FROM deployment_signature")
+            .fetch_one(&database.connection)
+            .await
+    }
+
     pub async fn get_count_by_app(database: &Database, app: &str) -> Result<i64, Error> {
         query_scalar("SELECT COUNT(*) FROM deployment_signature WHERE app = $1")
             .bind(app)
@@ -90,5 +96,22 @@ impl DatabaseDeploymentSignature {
         .await?;
 
         Ok(())
+    }
+}
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+pub struct DatabaseDeploymentSignaturePerDayCount {
+    count: i64,
+    day: i64,
+}
+impl DatabaseDeploymentSignaturePerDayCount {
+    pub async fn get_all(
+        database: &Database,
+    ) -> Result<Vec<DatabaseDeploymentSignaturePerDayCount>, Error> {
+        query_as(
+        "SELECT COUNT(*), date / 86400 as day FROM deployment_signature GROUP BY date / 86400 ORDER BY day DESC",
+        )
+        .fetch_all(&database.connection)
+        .await
     }
 }

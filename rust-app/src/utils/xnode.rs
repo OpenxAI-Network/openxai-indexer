@@ -67,7 +67,7 @@ services.xnode-reverse-proxy.rules.\"{domain}\" = [ {{ forward = \"http://xnode-
     }
 }
 
-pub async fn available_v1() -> bool {
+pub async fn available_v1() -> u64 {
     let client = reqwest::Client::new();
     let target_region = "NORWAY-1".to_string();
     let target_model = "RTX-A4000".to_string();
@@ -85,11 +85,11 @@ pub async fn available_v1() -> bool {
         Ok(response) => match response.json::<serde_json::Value>().await {
             Ok(response) => response,
             Err(_e) => {
-                return false;
+                return 0;
             }
         },
         Err(_e) => {
-            return false;
+            return 0;
         }
     };
 
@@ -129,7 +129,7 @@ pub async fn available_v1() -> bool {
                                 configurations.get("1x")
                             {
                                 if let Some(available) = available.as_u64() {
-                                    return available > 0;
+                                    return available;
                                 }
                             }
                         }
@@ -139,7 +139,7 @@ pub async fn available_v1() -> bool {
         }
     };
 
-    false
+    0
 }
 
 pub async fn deploy_v1(database: &Database, server: &mut DatabaseTokenizedServer) {

@@ -119,6 +119,20 @@ impl DatabaseTokenizedServer {
         .await
     }
 
+    pub async fn get_not_expired_count_by_collection(
+        database: &Database,
+        collection: &str,
+        chain: &str,
+    ) -> Result<i64, Error> {
+        query_scalar(
+            "SELECT COUNT(*) FROM tokenized_server WHERE collection = $1 AND chain = $2 AND expires > EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)",
+        )
+        .bind(collection)
+        .bind(chain)
+        .fetch_one(&database.connection)
+        .await
+    }
+
     pub async fn insert(&self, database: &Database) -> Result<(), Error> {
         let Self {
             collection,

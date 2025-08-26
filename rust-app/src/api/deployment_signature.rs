@@ -3,9 +3,36 @@ use alloy::providers::DynProvider;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    database::{Database, deployment_signature::DatabaseDeploymentSignature},
+    database::{
+        Database,
+        deployment_signature::{
+            DatabaseDeploymentSignature, DatabaseDeploymentSignaturePerDayCount,
+        },
+    },
     utils::{signature_validator::validate_signature, time::get_time_i64},
 };
+
+#[get("/deployment_signature/total")]
+async fn get_total(database: web::Data<Database>) -> impl Responder {
+    match DatabaseDeploymentSignature::get_count(&database).await {
+        Ok(total) => HttpResponse::Ok().json(total),
+        Err(e) => {
+            log::error!("Fetching deployment signature count: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[get("/deployment_signature/per_day")]
+async fn get_per_day(database: web::Data<Database>) -> impl Responder {
+    match DatabaseDeploymentSignaturePerDayCount::get_all(&database).await {
+        Ok(per_day) => HttpResponse::Ok().json(per_day),
+        Err(e) => {
+            log::error!("Fetching deployment signature per day count: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
 
 #[get("/deployment_signature/latest/{app}")]
 async fn get_latest(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {

@@ -281,6 +281,16 @@ impl OwnAIV1TokenCounter {
     }
 }
 
+#[get("/ownaiv1/{chain}/price")]
+async fn get_price() -> impl Responder {
+    HttpResponse::Ok().json(ownaiv1price())
+}
+
+#[get("/ownaiv1/{chain}/available")]
+async fn get_available() -> impl Responder {
+    HttpResponse::Ok().json(available_v1().await)
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Mint {
     pub to: String,
@@ -302,7 +312,7 @@ async fn post_mint(
         }
     };
 
-    if !available_v1().await {
+    if available_v1().await == 0 {
         return HttpResponse::FailedDependency().finish();
     }
 
@@ -355,6 +365,26 @@ async fn post_mint(
     deploy_v1(&database, &mut server).await;
 
     HttpResponse::Ok().json(token_id)
+}
+
+#[get("/ownaiv1/{chain}/active")]
+async fn get_active(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
+    let chain = path.into_inner();
+    let collection = Collection::OwnAIv1.to_string();
+
+    match DatabaseTokenizedServer::get_not_expired_count_by_collection(
+        &database,
+        &collection,
+        &chain,
+    )
+    .await
+    {
+        Ok(active) => HttpResponse::Ok().json(active),
+        Err(e) => {
+            log::error!("Fetching not expired count for {collection}@{chain}: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
 }
 
 #[get("/ownaiv1/{chain}/{token_id}/staking")]
