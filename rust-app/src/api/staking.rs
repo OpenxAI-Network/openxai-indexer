@@ -1,6 +1,20 @@
 use actix_web::{HttpResponse, Responder, get, web};
 
-use crate::database::{Database, staking::DatabaseStaking};
+use crate::database::{
+    Database,
+    staking::{DatabaseStaking, DatabaseStakingLeaderboard},
+};
+
+#[get("/staking/leaderboard")]
+async fn get_leaderboard(database: web::Data<Database>) -> impl Responder {
+    match DatabaseStakingLeaderboard::get(&database).await {
+        Ok(leaderboard) => HttpResponse::Ok().json(leaderboard),
+        Err(e) => {
+            log::error!("Fetching staking leaderboard: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
 
 #[get("/{account}/staking")]
 async fn get_staking(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {

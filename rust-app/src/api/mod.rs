@@ -44,6 +44,7 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(promo_code::post_redeem);
     cfg.service(promo_code::post_add);
 
+    cfg.service(staking::get_leaderboard);
     cfg.service(staking::get_staking);
     cfg.service(staking::get_total_staking);
 

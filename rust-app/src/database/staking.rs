@@ -87,3 +87,18 @@ impl DatabaseStaking {
         Ok(())
     }
 }
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+pub struct DatabaseStakingLeaderboard {
+    account: String,
+    total: i64,
+}
+impl DatabaseStakingLeaderboard {
+    pub async fn get(database: &Database) -> Result<Vec<DatabaseStakingLeaderboard>, Error> {
+        query_as(
+        "SELECT account, SUM(amount)::INT8 as total FROM staking GROUP BY account ORDER BY total DESC LIMIT 50",
+        )
+        .fetch_all(&database.connection)
+        .await
+    }
+}
