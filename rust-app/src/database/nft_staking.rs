@@ -5,11 +5,11 @@ use crate::database::{Database, DatabaseConnection};
 
 pub async fn create_table(connection: &DatabaseConnection) {
     sqlx::raw_sql(
-        "CREATE TABLE IF NOT EXISTS nft_nft_staking(id SERIAL PRIMARY KEY, account TEXT NOT NULL, amount INT8 NOT NULL, collection TEXT NOT NULL, chain TEXT NOT NULL, token_id TEXT NOT NULL, date INT8 NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS nft_staking(id SERIAL PRIMARY KEY, account TEXT NOT NULL, amount INT8 NOT NULL, collection TEXT NOT NULL, chain TEXT NOT NULL, token_id TEXT NOT NULL, date INT8 NOT NULL)",
     )
     .execute(connection)
     .await
-    .unwrap_or_else(|e| panic!("Could not create nft_nft_staking table: {e}"));
+    .unwrap_or_else(|e| panic!("Could not create nft_staking table: {e}"));
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
