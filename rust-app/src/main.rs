@@ -9,7 +9,6 @@ use crate::{
     utils::{
         env::{hostname, httprpc, port},
         manual_tokens::distribute_manual_tokens,
-        staking::distribute_staking_rewards,
         xnode::undeploy_expired_servers,
     },
 };
@@ -33,7 +32,7 @@ async fn main() {
     if let Err(e) = try_join!(
         spawn(start_event_listeners(database.clone())),
         spawn(undeploy_expired_servers(database.clone())),
-        spawn(distribute_staking_rewards(database.clone())),
+        // spawn(distribute_staking_rewards(database.clone())),
         spawn(distribute_manual_tokens(database.clone())),
         spawn(
             HttpServer::new(move || {

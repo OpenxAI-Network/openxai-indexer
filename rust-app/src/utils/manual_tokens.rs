@@ -1,25 +1,25 @@
 use std::time::Duration;
 
-use chrono::{NaiveTime, Utc};
+use chrono::{Timelike, Utc};
 use tokio::time::{self, Instant};
 
 use crate::database::{Database, claim::DatabaseClaim, manual_tokens::DatabaseManualTokens};
 
 pub async fn distribute_manual_tokens(database: Database) {
     let utc_now = Utc::now();
-    let utc_midnight = (utc_now + chrono::Duration::days(1))
-        .with_time(
-            NaiveTime::from_hms_opt(0, 0, 0).expect("Invalid manual token distribution time"),
-        )
-        .unwrap();
-    let until_utc_midnight = utc_midnight
+    let utc_next_hour = (utc_now + chrono::Duration::hours(1))
+        .with_minute(0)
+        .expect("Could not set minutes to 0")
+        .with_second(0)
+        .expect("Could not set seconds to 0");
+    let until_next_hour = utc_next_hour
         .signed_duration_since(utc_now)
         .to_std()
         .expect("Unable to convert until_utc_midnight into std duration");
 
     let mut interval = time::interval_at(
-        Instant::now() + until_utc_midnight,
-        Duration::from_secs(24 * 60 * 60),
+        Instant::now() + until_next_hour,
+        Duration::from_secs(60 * 60),
     );
 
     loop {

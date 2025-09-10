@@ -134,8 +134,8 @@ in
       contracts = {
         claimer = lib.mkOption {
           type = lib.types.str;
-          default = "0xc749169dB9C231E1797Aa9cD7f5B7a88AeD25b08";
-          example = "0xc749169dB9C231E1797Aa9cD7f5B7a88AeD25b08";
+          default = "0x1D2A4145bf920E674D05C26DE57Aad5eAFF3772f";
+          example = "0x1D2A4145bf920E674D05C26DE57Aad5eAFF3772f";
           description = ''
             OpenxAIClaimer contract address. 
           '';
@@ -161,8 +161,8 @@ in
 
         deposit = lib.mkOption {
           type = lib.types.str;
-          default = "0x1EdE9dE47e5E3B8941884e7f5DDa43D82570180D";
-          example = "0x1EdE9dE47e5E3B8941884e7f5DDa43D82570180D";
+          default = "0x0DA956C8865633AC2E7f02d935EBa495Aae63598";
+          example = "0x0DA956C8865633AC2E7f02d935EBa495Aae63598";
           description = ''
             OpenxAICreditsDeposit contract address. 
           '';

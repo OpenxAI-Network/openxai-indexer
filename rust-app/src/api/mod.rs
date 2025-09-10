@@ -4,10 +4,10 @@ pub mod claim;
 pub mod credits;
 pub mod deployment_signature;
 pub mod manual_tokens;
+pub mod nft_staking;
 pub mod ownai_v1;
 pub mod participated;
 pub mod promo_code;
-pub mod staking;
 pub mod tokens_claimed;
 
 pub fn configure(cfg: &mut ServiceConfig) {
@@ -44,9 +44,9 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(promo_code::post_redeem);
     cfg.service(promo_code::post_add);
 
-    cfg.service(staking::get_leaderboard);
-    cfg.service(staking::get_staking);
-    cfg.service(staking::get_total_staking);
+    cfg.service(nft_staking::get_leaderboard);
+    cfg.service(nft_staking::get_staking);
+    cfg.service(nft_staking::get_total_staking);
 
     cfg.service(tokens_claimed::get_tokens_claimed);
 }

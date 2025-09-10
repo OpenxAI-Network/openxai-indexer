@@ -11,7 +11,7 @@ use crate::{
     database::{
         Database,
         credits::DatabaseCredits,
-        staking::DatabaseStaking,
+        nft_staking::DatabaseNFTStaking,
         tokenized_server::{Chain, Collection, DatabaseTokenizedServer},
     },
     utils::{
@@ -395,8 +395,13 @@ async fn get_staking(
     let (chain, token_id) = path.into_inner();
     let collection = Collection::OwnAIv1.to_string();
 
-    match DatabaseStaking::get_all_by_collection_token_id(&database, &collection, &chain, &token_id)
-        .await
+    match DatabaseNFTStaking::get_all_by_collection_token_id(
+        &database,
+        &collection,
+        &chain,
+        &token_id,
+    )
+    .await
     {
         Ok(staking) => HttpResponse::Ok().json(staking),
         Err(e) => {

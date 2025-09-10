@@ -5,15 +5,15 @@ use crate::database::{Database, DatabaseConnection};
 
 pub async fn create_table(connection: &DatabaseConnection) {
     sqlx::raw_sql(
-        "CREATE TABLE IF NOT EXISTS staking(id SERIAL PRIMARY KEY, account TEXT NOT NULL, amount INT8 NOT NULL, collection TEXT NOT NULL, chain TEXT NOT NULL, token_id TEXT NOT NULL, date INT8 NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS nft_nft_staking(id SERIAL PRIMARY KEY, account TEXT NOT NULL, amount INT8 NOT NULL, collection TEXT NOT NULL, chain TEXT NOT NULL, token_id TEXT NOT NULL, date INT8 NOT NULL)",
     )
     .execute(connection)
     .await
-    .unwrap_or_else(|e| panic!("Could not create staking table: {e}"));
+    .unwrap_or_else(|e| panic!("Could not create nft_nft_staking table: {e}"));
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-pub struct DatabaseStaking {
+pub struct DatabaseNFTStaking {
     pub account: String,
     pub amount: i64,
     pub collection: String,
@@ -22,10 +22,10 @@ pub struct DatabaseStaking {
     pub date: i64,
 }
 
-impl DatabaseStaking {
+impl DatabaseNFTStaking {
     #[allow(dead_code)]
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
-        query_as("SELECT account, amount, collection, chain, token_id, date FROM staking")
+        query_as("SELECT account, amount, collection, chain, token_id, date FROM nft_staking")
             .fetch_all(&database.connection)
             .await
     }
@@ -34,7 +34,7 @@ impl DatabaseStaking {
         database: &Database,
         account: &str,
     ) -> Result<Vec<Self>, Error> {
-        query_as("SELECT account, amount, collection, chain, token_id, date FROM staking WHERE account = $1")
+        query_as("SELECT account, amount, collection, chain, token_id, date FROM nft_staking WHERE account = $1")
             .bind(account)
             .fetch_all(&database.connection)
             .await
@@ -46,7 +46,7 @@ impl DatabaseStaking {
         chain: &str,
         token_id: &str,
     ) -> Result<Vec<Self>, Error> {
-        query_as("SELECT account, amount, collection, chain, token_id, date FROM staking WHERE collection = $1 AND chain = $2 AND token_id = $3")
+        query_as("SELECT account, amount, collection, chain, token_id, date FROM nft_staking WHERE collection = $1 AND chain = $2 AND token_id = $3")
             .bind(collection)
             .bind(chain)
             .bind(token_id)
@@ -58,7 +58,7 @@ impl DatabaseStaking {
         database: &Database,
         account: &str,
     ) -> Result<Option<i64>, Error> {
-        query_scalar("SELECT SUM(amount)::INT8 FROM staking WHERE account = $1")
+        query_scalar("SELECT SUM(amount)::INT8 FROM nft_staking WHERE account = $1")
             .bind(account)
             .fetch_one(&database.connection)
             .await
@@ -74,7 +74,7 @@ impl DatabaseStaking {
             date,
         } = self;
 
-        query("INSERT INTO staking(account, amount, collection, chain, token_id, date) VALUES ($1, $2, $3, $4, $5, $6);")
+        query("INSERT INTO nft_staking(account, amount, collection, chain, token_id, date) VALUES ($1, $2, $3, $4, $5, $6);")
             .bind(account)
             .bind(amount)
             .bind(collection)
@@ -89,14 +89,14 @@ impl DatabaseStaking {
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-pub struct DatabaseStakingLeaderboard {
+pub struct DatabaseNFTStakingLeaderboard {
     account: String,
     total: i64,
 }
-impl DatabaseStakingLeaderboard {
-    pub async fn get(database: &Database) -> Result<Vec<DatabaseStakingLeaderboard>, Error> {
+impl DatabaseNFTStakingLeaderboard {
+    pub async fn get(database: &Database) -> Result<Vec<DatabaseNFTStakingLeaderboard>, Error> {
         query_as(
-        "SELECT account, SUM(amount)::INT8 as total FROM staking GROUP BY account ORDER BY total DESC LIMIT 50",
+        "SELECT account, SUM(amount)::INT8 as total FROM nft_staking GROUP BY account ORDER BY total DESC LIMIT 50",
         )
         .fetch_all(&database.connection)
         .await

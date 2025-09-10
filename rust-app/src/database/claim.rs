@@ -4,7 +4,7 @@ use sqlx::{Error, FromRow, query, query_as, query_scalar};
 use crate::{
     database::{
         Database, DatabaseConnection, manual_tokens::DatabaseManualTokens,
-        participated::DatabaseParticipated, staking::DatabaseStaking,
+        nft_staking::DatabaseNFTStaking, participated::DatabaseParticipated,
     },
     utils::time::get_time_i64,
 };
@@ -108,8 +108,8 @@ impl From<&DatabaseParticipated> for DatabaseClaim {
     }
 }
 
-impl From<&DatabaseStaking> for DatabaseClaim {
-    fn from(val: &DatabaseStaking) -> Self {
+impl From<&DatabaseNFTStaking> for DatabaseClaim {
+    fn from(val: &DatabaseNFTStaking) -> Self {
         DatabaseClaim {
             account: val.account.clone(),
             amount: val.amount,

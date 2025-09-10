@@ -2,42 +2,42 @@ use actix_web::{HttpResponse, Responder, get, web};
 
 use crate::database::{
     Database,
-    staking::{DatabaseStaking, DatabaseStakingLeaderboard},
+    nft_staking::{DatabaseNFTStaking, DatabaseNFTStakingLeaderboard},
 };
 
-#[get("/staking/leaderboard")]
+#[get("/nft_staking/leaderboard")]
 async fn get_leaderboard(database: web::Data<Database>) -> impl Responder {
-    match DatabaseStakingLeaderboard::get(&database).await {
+    match DatabaseNFTStakingLeaderboard::get(&database).await {
         Ok(leaderboard) => HttpResponse::Ok().json(leaderboard),
         Err(e) => {
-            log::error!("Fetching staking leaderboard: {e}");
+            log::error!("Fetching nft staking leaderboard: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }
 }
 
-#[get("/{account}/staking")]
+#[get("/{account}/nft_staking")]
 async fn get_staking(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
-    match DatabaseStaking::get_all_by_account(&database, &account).await {
+    match DatabaseNFTStaking::get_all_by_account(&database, &account).await {
         Ok(staking) => HttpResponse::Ok().json(staking),
         Err(e) => {
-            log::error!("Fetching staking for {account}: {e}");
+            log::error!("Fetching nft staking for {account}: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }
 }
 
-#[get("/{account}/total_staking")]
+#[get("/{account}/total_nft_staking")]
 async fn get_total_staking(
     database: web::Data<Database>,
     path: web::Path<String>,
 ) -> impl Responder {
     let account = path.into_inner();
-    match DatabaseStaking::get_total_amount_by_account(&database, &account).await {
+    match DatabaseNFTStaking::get_total_amount_by_account(&database, &account).await {
         Ok(amount) => HttpResponse::Ok().json(amount.unwrap_or(0)),
         Err(e) => {
-            log::error!("Fetching total staking for {account}: {e}");
+            log::error!("Fetching total nft staking for {account}: {e}");
             HttpResponse::InternalServerError().finish()
         }
     }

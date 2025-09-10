@@ -5,7 +5,7 @@ use tokio::time::{self, Instant};
 
 use crate::{
     database::{
-        Database, claim::DatabaseClaim, staking::DatabaseStaking,
+        Database, claim::DatabaseClaim, nft_staking::DatabaseNFTStaking,
         tokenized_server::DatabaseTokenizedServer,
     },
     utils::time::get_time_i64,
@@ -37,7 +37,7 @@ pub async fn distribute_staking_rewards(database: Database) {
             }
         };
         for server in servers {
-            let staking_reward = DatabaseStaking {
+            let staking_reward = DatabaseNFTStaking {
                 account: server.owner.clone(),
                 amount: calculate_staking_reward(&server),
                 collection: server.collection.clone(),

@@ -17,7 +17,7 @@ pub async fn start_event_listeners(database: Database) {
     if let Err(e) = try_join!(
         spawn(claimer::event_listeners(provider.clone(), database.clone())),
         spawn(credits::event_listeners(provider.clone(), database.clone())),
-        spawn(genesis::event_listeners(provider.clone(), database.clone())),
+        // spawn(genesis::event_listeners(provider.clone(), database.clone())),
         spawn(ownai_v1::event_listeners(
             provider.clone(),
             database.clone()

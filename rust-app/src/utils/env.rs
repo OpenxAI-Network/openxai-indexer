@@ -63,7 +63,7 @@ pub fn chainid() -> u64 {
 
 pub fn claimer() -> Address {
     Address::parse_checksummed(
-        env_var("CLAIMER").unwrap_or("0xc749169dB9C231E1797Aa9cD7f5B7a88AeD25b08".to_string()),
+        env_var("CLAIMER").unwrap_or("0x1D2A4145bf920E674D05C26DE57Aad5eAFF3772f".to_string()),
         None,
     )
     .unwrap_or_else(|e| panic!("Invalid CLAIMER provided: {e}"))
@@ -87,7 +87,7 @@ pub fn ownaiv1() -> Address {
 
 pub fn deposit() -> Address {
     Address::parse_checksummed(
-        env_var("DEPOSIT").unwrap_or("0x1EdE9dE47e5E3B8941884e7f5DDa43D82570180D".to_string()),
+        env_var("DEPOSIT").unwrap_or("0x0DA956C8865633AC2E7f02d935EBa495Aae63598".to_string()),
         None,
     )
     .unwrap_or_else(|e| panic!("Invalid DEPOSIT provided: {e}"))
