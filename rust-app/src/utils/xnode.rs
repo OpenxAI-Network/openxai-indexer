@@ -74,10 +74,7 @@ pub async fn available_v1() -> u64 {
 
     let response = match client
         .get("https://infrahub-api.nexgencloud.com/v1/core/stocks")
-        .header(
-            "api_key",
-            "7eeb6090-7fe6-48c5-ab6e-7d7d88b529fd".to_string(),
-        ) //hyperstackapikey())
+        .header("api_key", hyperstackapikey())
         .send()
         .await
         .and_then(|response| response.error_for_status())
