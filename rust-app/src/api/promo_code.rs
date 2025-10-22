@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     database::{Database, credits::DatabaseCredits, promo_code::DatabasePromoCode},
-    utils::{env::manualtokensigner, signature_validator::validate_signature},
+    utils::{env::promocodesigner, signature_validator::validate_signature},
 };
 
 #[derive(Serialize, Deserialize)]
@@ -70,7 +70,7 @@ async fn post_add(
 ) -> impl Responder {
     if !validate_signature(
         provider.get_ref(),
-        &manualtokensigner(),
+        &promocodesigner(),
         &data.promo_codes,
         &data.signature,
     )

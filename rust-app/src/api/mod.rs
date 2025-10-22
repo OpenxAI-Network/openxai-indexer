@@ -1,5 +1,6 @@
 use actix_web::web::ServiceConfig;
 
+pub mod agreement;
 pub mod claim;
 pub mod credits;
 pub mod deployment_signature;
@@ -11,6 +12,10 @@ pub mod promo_code;
 pub mod tokens_claimed;
 
 pub fn configure(cfg: &mut ServiceConfig) {
+    cfg.service(agreement::list);
+    cfg.service(agreement::create);
+    cfg.service(agreement::sign);
+
     cfg.service(claim::get_claim);
     cfg.service(claim::get_claim_total);
     cfg.service(claim::post_claim);

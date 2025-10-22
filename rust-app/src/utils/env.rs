@@ -29,7 +29,15 @@ pub fn tokenminterkey() -> String {
 }
 
 pub fn manualtokensigner() -> String {
-    env_var("MANUALTOKENSIGNER").expect("No MANUALTOKENSIGNER provided.")
+    env_var("MANUALTOKENSIGNER").unwrap_or("0x3e166454c7781d3fD4ceaB18055cad87136970Ea".to_string())
+}
+
+pub fn promocodesigner() -> String {
+    env_var("PROMOCODESIGNER").unwrap_or("0x3e166454c7781d3fD4ceaB18055cad87136970Ea".to_string())
+}
+
+pub fn agreementsigner() -> String {
+    env_var("AGREEMENTSIGNER").unwrap_or("0x3e166454c7781d3fD4ceaB18055cad87136970Ea".to_string())
 }
 
 pub fn database() -> String {

@@ -8,7 +8,7 @@ edition = "2024"
 [dependencies]
 alloy = { version = "1", features = ["provider-ws"] }
 futures-util = "0.3"
-log = "0.4.27"
+log = "0.4"
 tokio = { version = "1", features = ["full"] }
 sqlx = { version = "0.8", features = ["runtime-tokio", "postgres"] }
 env_logger = "0.11"

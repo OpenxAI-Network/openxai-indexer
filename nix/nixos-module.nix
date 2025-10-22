@@ -73,6 +73,24 @@ in
         '';
       };
 
+      promocodesigner = lib.mkOption {
+        type = lib.types.str;
+        default = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        example = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        description = ''
+          Address that signs promo code additions.
+        '';
+      };
+
+      agreementsigner = lib.mkOption {
+        type = lib.types.str;
+        default = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        example = "0x3e166454c7781d3fD4ceaB18055cad87136970Ea";
+        description = ''
+          Address that signs agreement creations.
+        '';
+      };
+
       database = lib.mkOption {
         type = lib.types.str;
         default = "postgres:openxai-indexer?host=/run/postgresql";
@@ -227,6 +245,8 @@ in
         TOKENOWNERKEY = cfg.tokenownerkey;
         TOKENMINTERKEY = cfg.tokenminterkey;
         MANUALTOKENSIGNER = cfg.manualtokensigner;
+        PROMOCODESIGNER = cfg.promocodesigner;
+        AGREEMENTSIGNER = cfg.agreementsigner;
         DATABASE = cfg.database;
         SUBDOMAINDISTRIBUTOR = cfg.subdomaindistributor;
         HTTPRPC = cfg.rpc.http;

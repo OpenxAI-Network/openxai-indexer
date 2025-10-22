@@ -2,6 +2,7 @@ use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 
 use crate::utils::env::database;
 
+pub mod agreement;
 pub mod claim;
 pub mod credits;
 pub mod deployment_signature;
@@ -34,6 +35,7 @@ pub async fn create_connection() -> DatabaseConnection {
         .await
         .unwrap_or_else(|e| panic!("Could not establish database connection: {e}"));
 
+    agreement::create_table(&connection).await;
     claim::create_table(&connection).await;
     credits::create_table(&connection).await;
     deployment_signature::create_table(&connection).await;

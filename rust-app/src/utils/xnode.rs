@@ -59,7 +59,7 @@ nixpkgs.config.allowUnfree = true;
 hardware.graphics = {{ enable = true; extraPackages = [ pkgs.nvidia-vaapi-driver ]; }};
 hardware.nvidia.open = true;
 services.xserver.videoDrivers = [ \"nvidia\" ];
-services.xnode-reverse-proxy.rules.\"{domain}\" = [ {{ forward = \"http://xnode-ai-chat.container:8080\"; }} ];\
+services.xnode-reverse-proxy.rules.\"{domain}\" = [ {{ forward = \"http://xnode-ai-chat:8080\"; }} ];\
 "
         ).replace("\"", "\\\"").replace("\n", "\\n").replace("\\", "\\\\\\")),
         user_passwd: None,
