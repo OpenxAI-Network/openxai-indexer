@@ -5,7 +5,7 @@ use crate::database::{Database, DatabaseConnection};
 
 pub async fn create_table(connection: &DatabaseConnection) {
     sqlx::raw_sql(
-        "CREATE TABLE IF NOT EXISTS agreement(id SERIAL PRIMARY KEY, for_account TEXT NOT NULL, description TEXT NOT NULL, created_at INT8 NOT NULL, signed_at INT8, signature TEXT)"
+        "CREATE TABLE IF NOT EXISTS agreement(id SERIAL PRIMARY KEY, for_account TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, created_at INT8 NOT NULL, signed_at INT8, signature TEXT)"
     )
     .execute(connection)
     .await
@@ -16,6 +16,7 @@ pub async fn create_table(connection: &DatabaseConnection) {
 pub struct DatabaseAgreement {
     pub id: i32,
     pub for_account: String,
+    pub title: String,
     pub description: String,
     pub created_at: i64,
     pub signed_at: Option<i64>,
@@ -25,7 +26,7 @@ pub struct DatabaseAgreement {
 impl DatabaseAgreement {
     pub async fn get_all(database: &Database) -> Result<Vec<Self>, Error> {
         query_as(
-            "SELECT id, for_account, description, created_at, signed_at, signature FROM agreement ORDER BY id DESC",
+            "SELECT id, for_account, title, description, created_at, signed_at, signature FROM agreement ORDER BY id DESC",
         )
         .fetch_all(&database.connection)
         .await
@@ -36,22 +37,23 @@ impl DatabaseAgreement {
         database: &Database,
         for_account: &str,
     ) -> Result<Vec<Self>, Error> {
-        query_as("SELECT id, for_account, description, created_at, signed_at, signature FROM agreement WHERE for_account = $1")
+        query_as("SELECT id, for_account, title, description, created_at, signed_at, signature FROM agreement WHERE for_account = $1")
             .bind(for_account)
             .fetch_all(&database.connection)
             .await
     }
 
     pub async fn get_by_id(database: &Database, id: i32) -> Result<Option<Self>, Error> {
-        query_as("SELECT id, for_account, description, created_at, signed_at, signature FROM agreement WHERE id = $1")
+        query_as("SELECT id, for_account, title, description, created_at, signed_at, signature FROM agreement WHERE id = $1")
             .bind(id)
             .fetch_optional(&database.connection)
             .await
     }
 
     pub async fn insert(&mut self, database: &Database) -> Result<(), Error> {
-        let id: i32 = query_scalar("INSERT INTO agreement(for_account, description, created_at, signed_at, signature) VALUES ($1, $2, $3, $4, $5) RETURNING id")
+        let id: i32 = query_scalar("INSERT INTO agreement(for_account, title, description, created_at, signed_at, signature) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
             .bind(&self.for_account)
+            .bind(&self.title)
             .bind(&self.description)
             .bind(self.created_at)
             .bind(self.signed_at)

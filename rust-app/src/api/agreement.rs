@@ -36,6 +36,7 @@ async fn info(database: web::Data<Database>, path: web::Path<i32>) -> impl Respo
 #[derive(Serialize, Deserialize)]
 pub struct CreateAgreement {
     pub for_account: String,
+    pub title: String,
     pub description: String,
     pub signature: String,
 }
@@ -46,8 +47,9 @@ async fn create(
     data: web::Json<CreateAgreement>,
 ) -> impl Responder {
     let message = format!(
-        "Create agreement {agreement} for {for_account}",
+        "Create agreement {agreement} with title {title} for {for_account}",
         agreement = data.description,
+        title = data.title,
         for_account = data.for_account
     );
     if !validate_signature(
@@ -64,6 +66,7 @@ async fn create(
     let mut agreement = DatabaseAgreement {
         id: 0,
         for_account: data.for_account.clone(),
+        title: data.title.clone(),
         description: data.description.clone(),
         created_at: get_time_i64(),
         signed_at: None,
