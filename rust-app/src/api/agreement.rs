@@ -78,7 +78,7 @@ async fn create(
         return HttpResponse::InternalServerError().finish();
     }
 
-    HttpResponse::Ok().finish()
+    HttpResponse::Ok().json(agreement.id)
 }
 
 #[derive(Serialize, Deserialize)]
