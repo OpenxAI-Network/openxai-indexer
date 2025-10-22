@@ -13,6 +13,7 @@ pub mod tokens_claimed;
 
 pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(agreement::list);
+    cfg.service(agreement::info);
     cfg.service(agreement::create);
     cfg.service(agreement::sign);
 

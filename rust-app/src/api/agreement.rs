@@ -18,6 +18,21 @@ async fn list(database: web::Data<Database>) -> impl Responder {
     }
 }
 
+#[get("/agreement/{id}/info")]
+async fn info(database: web::Data<Database>, path: web::Path<i32>) -> impl Responder {
+    let id = path.into_inner();
+    match DatabaseAgreement::get_by_id(&database, id).await {
+        Ok(agreement) => match agreement {
+            Some(agreement) => HttpResponse::Ok().json(agreement),
+            None => HttpResponse::NotFound().finish(),
+        },
+        Err(e) => {
+            log::error!("Fetching agreements: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct CreateAgreement {
     pub for_account: String,
