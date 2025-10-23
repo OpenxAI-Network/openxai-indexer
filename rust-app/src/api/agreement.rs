@@ -107,8 +107,9 @@ async fn sign(
     };
 
     let message = format!(
-        "I agree to {agreement} at {signed_at}",
+        "I agree to {agreement} titled {title} at {signed_at}",
         agreement = agreement.description,
+        title = agreement.title,
         signed_at = data.signed_at
     );
     if !validate_signature(
