@@ -8,7 +8,6 @@ use crate::{
     database::Database,
     utils::{
         env::{hostname, httprpc, port},
-        manual_tokens::distribute_manual_tokens,
         xnode::undeploy_expired_servers,
     },
 };

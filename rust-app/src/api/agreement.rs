@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse, Responder, get, post, web};
-use alloy::providers::DynProvider;
+use alloy::{primitives::keccak256, providers::DynProvider};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -46,12 +46,13 @@ async fn create(
     provider: web::Data<DynProvider>,
     data: web::Json<CreateAgreement>,
 ) -> impl Responder {
-    let message = format!(
-        "Create agreement {agreement} with title {title} for {for_account}",
+    let hash = keccak256(format!(
+        "{agreement} with title {title} for {for_account}",
         agreement = data.description,
         title = data.title,
         for_account = data.for_account
-    );
+    ));
+    let message = format!("Create agreement {hash}");
     if !validate_signature(
         provider.get_ref(),
         &agreementsigner(),
@@ -106,10 +107,13 @@ async fn sign(
         }
     };
 
-    let message = format!(
-        "I agree to {agreement} titled {title} at {signed_at}",
+    let hash = keccak256(format!(
+        "{agreement} titled {title}",
         agreement = agreement.description,
         title = agreement.title,
+    ));
+    let message = format!(
+        "I agree to {hash} at {signed_at}",
         signed_at = data.signed_at
     );
     if !validate_signature(
