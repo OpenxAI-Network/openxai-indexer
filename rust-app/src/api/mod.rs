@@ -19,7 +19,7 @@ pub fn configure(cfg: &mut ServiceConfig) {
 
     cfg.service(claim::get_claim);
     cfg.service(claim::get_claim_total);
-    // cfg.service(claim::post_claim);
+    cfg.service(claim::post_claim);
 
     cfg.service(credits::get_credits);
     cfg.service(credits::get_total_credits);
