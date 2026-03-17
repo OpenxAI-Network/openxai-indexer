@@ -38,6 +38,13 @@ async fn get_claim_total(database: web::Data<Database>, path: web::Path<String>)
 #[post("/{account}/claim")]
 async fn post_claim(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
+    if account == "0x0FF350487269Fda1aE176620D42c8ab9958493E2"
+        || account == "0xE87C55363A51845352a9eD15521ab6AB6AA33Dc4"
+        || account == "0x03f0c4A0652B2E02Ab476D647E34F1F4CfbFA724"
+        || account == "0xd438C6D4a1450b55284847f06E0ed291fb053238"
+    {
+        return HttpResponse::BadRequest().finish();
+    }
     let claimer = match Address::parse_checksummed(&account, None) {
         Ok(claimer) => claimer,
         Err(_e) => {
