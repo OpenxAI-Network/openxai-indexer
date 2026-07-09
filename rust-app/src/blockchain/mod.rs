@@ -6,6 +6,7 @@ use crate::{database::Database, utils::env::wsrpc};
 pub mod claimer;
 pub mod credits;
 pub mod genesis;
+pub mod nftclaimer;
 pub mod ownai_v1;
 
 pub async fn start_event_listeners(database: Database) {
@@ -18,6 +19,10 @@ pub async fn start_event_listeners(database: Database) {
         spawn(claimer::event_listeners(provider.clone(), database.clone())),
         spawn(credits::event_listeners(provider.clone(), database.clone())),
         // spawn(genesis::event_listeners(provider.clone(), database.clone())),
+        spawn(nftclaimer::event_listeners(
+            provider.clone(),
+            database.clone()
+        )),
         spawn(ownai_v1::event_listeners(
             provider.clone(),
             database.clone()

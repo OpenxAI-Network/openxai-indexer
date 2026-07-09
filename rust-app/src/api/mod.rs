@@ -6,6 +6,7 @@ pub mod credits;
 pub mod deployment_signature;
 pub mod manual_tokens;
 pub mod nft_staking;
+pub mod nftclaim;
 pub mod ownai_v1;
 pub mod participated;
 pub mod promo_code;
@@ -55,4 +56,8 @@ pub fn configure(cfg: &mut ServiceConfig) {
     cfg.service(nft_staking::get_total_staking);
 
     cfg.service(tokens_claimed::get_tokens_claimed);
+
+    cfg.service(nftclaim::get);
+    cfg.service(nftclaim::post);
+    cfg.service(nftclaim::post_upload);
 }

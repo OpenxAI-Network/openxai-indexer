@@ -8,6 +8,7 @@ pub mod credits;
 pub mod deployment_signature;
 pub mod manual_tokens;
 pub mod nft_staking;
+pub mod nftclaim;
 pub mod participated;
 pub mod promo_code;
 pub mod tokenized_server;
@@ -43,6 +44,7 @@ pub async fn create_connection() -> DatabaseConnection {
     participated::create_table(&connection).await;
     promo_code::create_table(&connection).await;
     nft_staking::create_table(&connection).await;
+    nftclaim::create_table(&connection).await;
     tokenized_server::create_table(&connection).await;
     tokens_claimed::create_table(&connection).await;
 

@@ -6,9 +6,11 @@ use alloy::{
 };
 
 use crate::{
-    blockchain::{claimer::Claim, ownai_v1::OpenxAITokenizedServerV1},
+    blockchain::{claimer::Claim, nftclaimer, ownai_v1::OpenxAITokenizedServerV1},
     utils::env::{chainid, claimer, claimerkey, ownaiv1, tokenminterkey, tokenownerkey},
 };
+
+use super::env::nftclaimer;
 
 pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, alloy::signers::Error> {
     let signer: PrivateKeySigner = claimerkey()
@@ -20,6 +22,29 @@ pub async fn get_claimer_signature(claim: &Claim) -> Result<Signature, alloy::si
         version: "1",
         chain_id: chainid(),
         verifying_contract: claimer(),
+    };
+
+    // Derive the EIP-712 signing hash.
+    let hash = claim.eip712_signing_hash(&domain);
+
+    // Sign the hash asynchronously with the wallet.
+    let signature = signer.sign_hash(&hash).await?;
+
+    Ok(signature)
+}
+
+pub async fn get_nft_claimer_signature(
+    claim: &nftclaimer::Claim,
+) -> Result<Signature, alloy::signers::Error> {
+    let signer: PrivateKeySigner = claimerkey()
+        .parse()
+        .unwrap_or_else(|e| panic!("Could not parse claimerkey: {e}"));
+
+    let domain = eip712_domain! {
+        name: "OpenxAINFTClaiming",
+        version: "1",
+        chain_id: chainid(),
+        verifying_contract: nftclaimer(),
     };
 
     // Derive the EIP-712 signing hash.

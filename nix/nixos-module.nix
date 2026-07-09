@@ -159,6 +159,15 @@ in
           '';
         };
 
+        nftclaimer = lib.mkOption {
+          type = lib.types.str;
+          default = "0x19aBE353b21A6e1B4857680A35295DbF3782e15a";
+          example = "0x19aBE353b21A6e1B4857680A35295DbF3782e15a";
+          description = ''
+            OpenxAINFTClaimer contract address. 
+          '';
+        };
+
         genesis = lib.mkOption {
           type = lib.types.str;
           default = "0x84599c907B42e9bc21F9FE26D9e5A5D3747109D3";
@@ -253,6 +262,7 @@ in
         WSRPC = cfg.rpc.ws;
         CHAINID = toString cfg.chainId;
         CLAIMER = cfg.contracts.claimer;
+        NFTCLAIMER = cfg.contracts.nftclaimer;
         GENESIS = cfg.contracts.genesis;
         OWNAIV1 = cfg.contracts.ownaiv1;
         DEPOSIT = cfg.contracts.deposit;

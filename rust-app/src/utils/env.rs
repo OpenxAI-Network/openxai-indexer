@@ -77,6 +77,14 @@ pub fn claimer() -> Address {
     .unwrap_or_else(|e| panic!("Invalid CLAIMER provided: {e}"))
 }
 
+pub fn nftclaimer() -> Address {
+    Address::parse_checksummed(
+        env_var("NFTCLAIMER").unwrap_or("0x19aBE353b21A6e1B4857680A35295DbF3782e15a".to_string()),
+        None,
+    )
+    .unwrap_or_else(|e| panic!("Invalid NFTCLAIMER provided: {e}"))
+}
+
 pub fn genesis() -> Address {
     Address::parse_checksummed(
         env_var("GENESIS").unwrap_or("0x84599c907B42e9bc21F9FE26D9e5A5D3747109D3".to_string()),
