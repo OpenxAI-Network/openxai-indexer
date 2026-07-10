@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     blockchain::nftclaimer::Claim,
-    database::{Database, claim::DatabaseClaim, nftclaim::DatabaseNFTClaim},
+    database::{Database, nftclaim::DatabaseNFTClaim},
     utils::{
         env::manualtokensigner, signature_validator::validate_signature,
         wallet::get_nft_claimer_signature,
@@ -19,7 +19,7 @@ use crate::{
 #[get("/nftclaim/{account}")]
 async fn get(database: web::Data<Database>, path: web::Path<String>) -> impl Responder {
     let account = path.into_inner();
-    match DatabaseClaim::get_all_by_account(&database, &account).await {
+    match DatabaseNFTClaim::get_all_by_account(&database, &account).await {
         Ok(claim) => HttpResponse::Ok().json(claim),
         Err(e) => {
             log::error!("Fetching nftclaim for {account}: {e}");
