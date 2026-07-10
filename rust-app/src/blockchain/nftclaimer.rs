@@ -3,7 +3,7 @@ use futures_util::StreamExt;
 
 use crate::{
     database::{Database, nftclaim::DatabaseNFTClaim},
-    utils::env::claimer,
+    utils::env::{claimer, nftclaimer},
 };
 
 sol! {
@@ -20,7 +20,7 @@ sol! {
 }
 
 pub async fn event_listeners<P: Provider>(provider: P, database: Database) {
-    let claimer = OpenxAINFTClaimer::new(claimer(), provider);
+    let claimer = OpenxAINFTClaimer::new(nftclaimer(), provider);
     let nft_claimed_stream = claimer
         .NFTClaimed_filter()
         .subscribe()
